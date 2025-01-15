@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.type-management')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop is-centered mt-6 mb-6">
+    <h2 class="title is-3">
+      <span th:text="#{admin.types.header}">Types</span>
+      <a th:href="@{/admin/classes/types/create}" class="button is-primary is-pulled-right" th:text="#{admin.types.add}">+ Add</a>
+    </h2>
+    <table class="table is-striped is-hoverable is-fullwidth mt-4">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="type: ${types}">
+          <td class="is-vcentered">
+            <p th:text="${type.name}"></p>
+          </td>
+          <td class="has-text-right is-vcentered">
+            <form th:action="@{/admin/classes/types/{id}(id=${type.id})}" th:method="delete" style="display: inline;">
+              <button class="button is-danger is-small" name="delete" value="Delete" th:text="#{admin.types.delete}">Delete</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

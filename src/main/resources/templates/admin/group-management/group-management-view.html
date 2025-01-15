@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.group-management')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop is-centered mt-6 mb-6">
+    <h2 class="title is-3">
+      <span th:text="#{admin.groups.title}">Groups</span>
+      <a th:href="@{/admin/groups/create}" class="button is-primary is-pulled-right" th:text="#{admin.groups.addButton}">+ Create</a>
+    </h2>
+    <form class="field has-addons" method="get" th:action="@{groups}">
+      <div class="control is-expanded">
+        <input name="keyword" class="input" th:placeholder="#{admin.groups.searchPlaceholder}" th:value="${keyword}" type="text">
+      </div>
+      <div class="control">
+        <button class="button" type="submit" th:text="#{admin.groups.searchButton}">Search</button>
+      </div>
+    </form>
+    
+    <table class="table is-striped is-hoverable is-fullwidth">
+      <thead>
+        <tr>
+          <th th:text="#{admin.groups.groupName}">Group Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="group: ${groups}">
+          <td>
+            <a th:text="${group.name}" th:href="@{groups/{id}(id=${group.id})}"></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div th:replace="~{fragments/pagination-bar :: pagination-bar (${totalPages}, ${currentPage}, ${keyword}, 'groups')}"></div>
+  </div>
+</body>
+</html>

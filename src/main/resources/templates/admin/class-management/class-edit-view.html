@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.class.edit')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop mb-6">
+    <h2 class="title mt-4" th:text="#{admin.class.edit.header}">Class Edition</h2>
+    <form th:object="${class}" th:action="@{{id}(id=${class.id})}" th:method="put" id="form">
+      <div class="field">
+        <label class="label" for="course" th:text="#{admin.class.edit.course.label}">Course:</label>
+        <div class="control">
+          <input class="input" type="text" id="courseSearchInput" th:placeholder="#{admin.class.edit.course.placeholder}" 
+            oninput="searchCourses()" th:field="*{course}" autocomplete="off">
+        </div>
+        <div class="dropdown" id="courseDropdown" style="display: none;">
+          <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
+            <div class="dropdown-content" id="courseResults"></div>
+          </div>
+        </div>
+      </div>
+  
+      <label class="label" for="type" th:text="#{admin.class.edit.type.label}">Type:</label>
+      <div class="field is-horizontal">
+        <div class="field-label is-normal"></div>
+        <div class="field-body">
+          <div class="field">
+            <div class="control is-expanded">
+              <div class="select is-fullwidth">
+                <select id="type" name="type" required>
+                  <option value="" disabled selected th:text="#{admin.class.edit.type.placeholder}">Select a type</option>
+                  <option th:each="type : ${types}" th:value="${type.name}" th:text="${type.name}"></option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <a href="/admin/classes/types" target="_blank" class="button is-link" th:text="#{admin.class.edit.type.manage}">Manage Class Types</a>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <label class="label" for="venue" th:text="#{admin.class.edit.venue.label}">Venue:</label>
+      <div class="field is-horizontal">
+        <div class="field-label is-normal"></div>
+        <div class="field-body">
+          <div class="field">
+            <div class="control is-expanded">
+              <input class="input" type="text" id="venueSearchInput" th:placeholder="#{admin.class.edit.venue.placeholder}" 
+                oninput="searchVenues()" th:field="*{venue}" autocomplete="off">
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <a href="/admin/classes/venues" target="_blank" class="button is-link" th:text="#{admin.class.edit.venue.manage}">Manage Class Venues</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dropdown" id="venueDropdown" style="display: none;">
+        <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
+          <div class="dropdown-content" id="venueResults"></div>
+        </div>
+      </div>
+  
+      <div class="field">
+        <label class="label" for="group" th:text="#{admin.class.edit.group.label}">Groups:</label>
+        <ul>
+          <li th:each="group, iterStat : *{groupNames}">
+            <div class="mt-2">
+              <input readonly class="input" type="text" th:name="groupNames" th:value="${group}" />
+              <button type="button" onclick="removeInput(this)" th:text="#{admin.class.edit.group.remove}">Remove</button>
+            </div>
+          </li>
+        </ul>
+        <div class="dropdown" id="groupDropdown" style="display: none;">
+          <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
+            <div class="dropdown-content" id="groupResults"></div>
+          </div>
+        </div>
+        <div id="additionalGroups"></div> 
+        <div class="control mt-2">
+          <button type="button" onclick="addGroupInput()" th:text="#{admin.class.edit.group.add}">Add Group</button>
+        </div>
+      </div>
+  
+      <div class="field">
+        <label class="label" for="user" th:text="#{admin.class.edit.teacher.label}">Teachers:</label>
+        <ul>
+          <li th:each="teacher, iterStat : *{teacherLogins}">
+            <div class="mt-2">
+              <input readonly class="input" type="text" th:name="teacherLogins" th:value="${teacher}" />
+              <button type="button" onclick="removeInput(this)" th:text="#{admin.class.edit.teacher.remove}">Remove</button>
+            </div>
+          </li>
+        </ul>
+        <div class="dropdown" id="userDropdown" style="display: none;">
+          <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
+            <div class="dropdown-content" id="userResults"></div>
+          </div>
+        </div>
+        <div id="additionalUsers"></div> 
+        <div class="control mt-2">
+          <button type="button" onclick="addUserInput()" th:text="#{admin.class.edit.teacher.add}">Add Teacher</button>
+        </div>
+      </div>
+      <div class="control">
+        <input class="button is-primary" type="submit" th:value="#{admin.class.edit.submit}" value="Edit">
+      </div>
+    </form>
+  </div>
+
+  
+  <script>
+  	async function searchCourses() {
+	  const query = document.getElementById('courseSearchInput').value;
+	  const courseDropdown = document.getElementById('courseDropdown');
+	  const courseResults = document.getElementById('courseResults');
+	  if (query.length < 1) {
+	    courseDropdown.style.display = 'none';
+	    return;
+	  }
+	  const response = await fetch(`/admin/courses/search?keyword=${query}`);
+	  const courses = await response.json();
+	  courseResults.innerHTML = '';
+	  courses.forEach(course => {
+	    const courseItem = document.createElement('a');
+	    courseItem.className = 'dropdown-item';
+	    courseItem.textContent = course.name;
+	    courseItem.onclick = () => selectCourse(course.name);
+	    courseResults.appendChild(courseItem);
+	  });
+	  courseDropdown.style.display = courses.length > 0 ? 'block' : 'none';
+	  courseDropdown.classList.toggle('is-active', courses.length > 0);
+	}
+
+	function selectCourse(courseName) {
+	  document.getElementById('courseSearchInput').value = courseName;
+	  document.getElementById('courseDropdown').style.display = 'none';
+	}
+
+	async function searchVenues() {
+	  const query = document.getElementById('venueSearchInput').value;
+	  const venueDropdown = document.getElementById('venueDropdown');
+	  const venueResults = document.getElementById('venueResults');
+	  if (query.length < 1) {
+	    venueDropdown.style.display = 'none';
+	    return;
+	  }
+	  const response = await fetch(`/admin/classes/venues/search?keyword=${query}`);
+	  const venues = await response.json();
+	  venueResults.innerHTML = '';
+	  venues.forEach(venue => {
+	    const venueItem = document.createElement('a');
+	    venueItem.className = 'dropdown-item';
+	    venueItem.textContent = venue.name;
+	    venueItem.onclick = () => selectVenue(venue.name);
+	    venueResults.appendChild(venueItem);
+	  });
+	  venueDropdown.style.display = venues.length > 0 ? 'block' : 'none';
+	  venueDropdown.classList.toggle('is-active', venues.length > 0);
+	}
+
+	function selectVenue(venueName) {
+	  document.getElementById('venueSearchInput').value = venueName;
+	  document.getElementById('venueDropdown').style.display = 'none';
+	}
+
+	function addGroupInput() {
+	  const additionalGroupsContainer = document.getElementById('additionalGroups');
+	  const groupContainer = document.createElement('div');
+	  groupContainer.className = 'field mt-2';
+	  const input = document.createElement('input');
+	  input.className = 'input';
+	  input.type = 'text';
+	  input.placeholder = 'Search for a group';
+	  input.name = 'groupNames';
+	  input.value = '';
+	  input.oninput = function () {
+	    searchGroups(input);
+	  };
+	  input.autocomplete = 'off';
+	  const dropdown = document.createElement('div');
+	  dropdown.className = 'dropdown';
+	  dropdown.style.display = 'none';
+	  const dropdownMenu = document.createElement('div');
+	  dropdownMenu.className = 'dropdown-menu is-fullwidth';
+	  dropdownMenu.style.cssText = 'max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;';
+	  const dropdownContent = document.createElement('div');
+	  dropdownContent.className = 'dropdown-content';
+	  dropdown.appendChild(dropdownMenu);
+	  dropdownMenu.appendChild(dropdownContent);
+	  groupContainer.appendChild(input);
+	  groupContainer.appendChild(dropdown);
+	  additionalGroupsContainer.appendChild(groupContainer);
+	}
+
+	async function searchGroups(inputElement) {
+	  const query = inputElement.value;
+	  const groupContainer = inputElement.parentElement.parentElement;
+	  const dropdown = groupContainer.querySelector('.dropdown');
+	  const dropdownContent = dropdown.querySelector('.dropdown-content');
+	  if (query.length < 1) {
+	    dropdown.style.display = 'none';
+	    return;
+	  }
+	  const response = await fetch(`/admin/groups/search?keyword=${query}`);
+	  const groups = await response.json();
+	  dropdownContent.innerHTML = '';
+	  groups.forEach(group => {
+	    const groupItem = document.createElement('a');
+	    groupItem.className = 'dropdown-item';
+	    groupItem.textContent = group.name;
+	    groupItem.onclick = () => selectGroup(inputElement, group.name);
+	    dropdownContent.appendChild(groupItem);
+	  });
+	  dropdown.style.display = groups.length > 0 ? 'block' : 'none';
+	  dropdown.classList.toggle('is-active', groups.length > 0);
+	}
+
+	function selectGroup(inputElement, groupName) {
+	  inputElement.value = groupName;
+	  const dropdown = inputElement.parentElement.parentElement.querySelector('.dropdown');
+	  dropdown.style.display = 'none';
+	}
+
+	function addUserInput() {
+	  const additionalUsersContainer = document.getElementById('additionalUsers');
+	  const userContainer = document.createElement('div');
+	  userContainer.className = 'field mt-2';
+	  const input = document.createElement('input');
+	  input.className = 'input';
+	  input.type = 'text';
+	  input.placeholder = 'Search for a teacher';
+	  input.name = 'teacherLogins';
+	  input.value = '';
+	  input.oninput = function () {
+	    searchUsers(input);
+	  };
+	  input.autocomplete = 'off';
+	  const dropdown = document.createElement('div');
+	  dropdown.className = 'dropdown';
+	  dropdown.style.display = 'none';
+	  const dropdownMenu = document.createElement('div');
+	  dropdownMenu.className = 'dropdown-menu is-fullwidth';
+	  dropdownMenu.style.cssText = 'max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;';
+	  const dropdownContent = document.createElement('div');
+	  dropdownContent.className = 'dropdown-content';
+	  dropdown.appendChild(dropdownMenu);
+	  dropdownMenu.appendChild(dropdownContent);
+	  userContainer.appendChild(input);
+	  userContainer.appendChild(dropdown);
+	  additionalUsersContainer.appendChild(userContainer);
+	}
+
+	async function searchUsers(inputElement) {
+	  const query = inputElement.value;
+	  const userContainer = inputElement.parentElement.parentElement;
+	  const dropdown = userContainer.querySelector('.dropdown');
+	  const dropdownContent = dropdown.querySelector('.dropdown-content');
+	  if (query.length < 1) {
+	    dropdown.style.display = 'none';
+	    return;
+	  }
+	  const response = await fetch(`/admin/users/search?keyword=${query}`);
+	  const users = await response.json();
+	  dropdownContent.innerHTML = '';
+	  users.forEach(user => {
+	    const userItem = document.createElement('a');
+	    userItem.className = 'dropdown-item';
+	    userItem.textContent = user.firstName + ' ' + user.lastName + ' ()' + user.login + ')';
+	    userItem.onclick = () => selectUser(inputElement, user.login);
+	    dropdownContent.appendChild(userItem);
+	  });
+	  dropdown.style.display = users.length > 0 ? 'block' : 'none';
+	  dropdown.classList.toggle('is-active', users.length > 0);
+	}
+
+	function selectUser(inputElement, login) {
+	  inputElement.value = login;
+	  const dropdown = inputElement.parentElement.parentElement.querySelector('.dropdown');
+	  dropdown.style.display = 'none';
+	}
+	
+	function removeInput(button) {
+      var div = button.closest('div');
+      div.remove();
+	}
+  </script>
+</body>
+</html>

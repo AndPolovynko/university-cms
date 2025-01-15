@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.course.edit')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop mt-5">
+    <h2 class="title is-4" th:text="#{admin.courses.editionTitle}">Course Edition</h2>
+    <form th:object="${course}" th:action="@{{id}(id=${course.id})}" th:method="put">
+      <input type="hidden" th:field="*{id}">
+      
+      <div class="field">
+        <label class="label" for="name" th:text="#{admin.courses.nameLabel}">Course name:</label>
+        <div class="control">
+          <input class="input" type="text" th:field="*{name}" />
+        </div>
+      </div>
+  
+      <div class="field">
+        <label class="label" for="description" th:text="#{admin.courses.descriptionLabel}">Course description:</label>
+        <div class="control">
+          <input class="input" type="text" th:field="*{description}" />
+        </div>
+      </div>
+  
+      <div class="field">
+        <div class="control">
+          <input class="button is-primary" type="submit" th:value="#{admin.courses.editButton}" />
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

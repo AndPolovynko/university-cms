@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.student.schedule')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: student}"></div>
+  <div class="container is-max-desktop mt-5">
+    <h1 class="title has-text-centered mb-2 is-size-4" th:text="#{student.timetable.header}">
+      Requested Timetable
+    </h1>
+    <th:block th:each="entry : ${classes}">
+      <div class="columns is-centered is-gapless">
+        <th:block th:each="entry : ${entry.value}">
+          <div class="column is-2">
+            <div class="box mr-3">
+              <h4 class="title has-text-centered mb-4 is-size-5" th:text="${entry.key}">Date 1</h4>
+              <table class="table is-fullwidth is-size-7">
+                <tbody>
+                  <tr th:each="class : ${entry.value}">
+                    <td th:text="${class.dateTime}"></td>
+                    <td>
+                      <a th:text="${class.course}"></a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </th:block>
+      </div>
+    </th:block>
+  </div>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.user.edit')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container mt-6">
+    <h2 class="title is-3 mt-4" th:text="#{admin.user.edit.header}">User Edition</h2>
+    <div class="columns is-multiline">
+      <!-- Login Info Form -->
+      <div class="column is-4">
+        <div class="box">
+          <h3 class="subtitle" th:text="#{admin.user.edit.login-info.header}">
+            Edit Login Info
+          </h3>
+          <form th:object="${user}" th:action="@{login-info/{id}(id=${user.id})}" th:method="put">
+            <input type="hidden" th:field="*{id}">
+            <div class="field">
+              <label class="label" for="login" th:text="#{admin.user.edit.login-info.login}">
+                New Login:
+              </label>
+              <div class="control">
+                <input class="input" type="text" th:field="*{login}" placeholder="Enter new login" />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label" for="password" th:text="#{admin.user.edit.login-info.password}">
+                New Password:
+              </label>
+              <div class="control">
+                <input class="input" type="password" th:field="*{password}" placeholder="Enter new password" />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label" for="email" th:text="#{admin.user.edit.login-info.email}">
+                New Email:
+              </label>
+              <div class="control">
+                <input class="input" type="text" th:field="*{email}" placeholder="Enter new email" />
+              </div>
+            </div>
+            <div class="control">
+              <button class="button is-primary" type="submit"
+                      th:text="#{admin.user.edit.login-info.button}">
+                Edit Login Info
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Roles Form -->
+      <div class="column is-4">
+        <div class="box">
+          <h3 class="subtitle" th:text="#{admin.user.edit.roles.header}">
+            Update Roles
+          </h3>
+          <form th:object="${user}" th:action="@{roles/{id}(id=${user.id})}" th:method="put">
+            <input type="hidden" th:field="*{id}">
+            <div class="field">
+              <div class="control">
+                <label class="checkbox">
+                  <input type="checkbox" th:field="*{roles}" value="ADMINISTRATOR" />
+                  <span th:text="#{admin.user.edit.roles.admin}">Admin</span>
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" th:field="*{roles}" value="TEACHER" />
+                  <span th:text="#{admin.user.edit.roles.teacher}">Teacher</span>
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" th:field="*{roles}" value="STUDENT" />
+                  <span th:text="#{admin.user.edit.roles.student}">Student</span>
+                </label>
+              </div>
+            </div>
+            <input type="hidden" th:field="*{firstName}" />
+            <input type="hidden" th:field="*{lastName}" />
+            <input type="hidden" th:field="*{jobTitle}" />
+            <input type="hidden" th:field="*{groupName}" />
+            <div class="control">
+              <button class="button is-primary" type="submit" th:text="#{admin.user.edit.roles.button}">
+                Change Roles
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Details Form -->
+      <div class="column is-4">
+        <div class="box">
+          <h3 class="subtitle" th:text="#{admin.user.edit.details.header}">
+            Edit User Details
+          </h3>
+          <form th:object="${user}" th:action="@{details/{id}(id=${user.id})}" th:method="put">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{roles}">
+            <div class="field">
+              <label class="label" for="firstName" th:text="#{admin.user.edit.details.firstName}">
+                New Name:
+              </label>
+              <div class="control">
+                <input class="input" type="text" th:field="*{firstName}" th:placeholder="#{admin.user.edit.details.firstName}" />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label" for="lastName" th:text="#{admin.user.edit.details.lastName}">
+                New Surname:
+              </label>
+              <div class="control">
+                <input class="input" type="text" th:field="*{lastName}" th:placeholder="#{admin.user.edit.details.lastName}" />
+              </div>
+            </div>
+            <div th:if="${#lists.contains(user.roles, 'ADMINISTRATOR')}" class="field">
+              <label class="label" for="jobTitle" th:text="#{admin.user.edit.details.jobTitle}">
+                Update Job Title:
+              </label>
+              <div class="control">
+                <input class="input" type="text" th:field="*{jobTitle}" th:placeholder="#{admin.user.edit.details.jobTitle}" />
+              </div>
+            </div>
+            <div th:if="${#lists.contains(user.roles, 'STUDENT')}" class="field" id="groupNameField">
+              <label class="label" th:text="#{admin.user.edit.details.groupName}">
+                Group
+              </label>
+              <div class="control">
+                <input class="input" type="text" id="groupSearchInput" th:placeholder="#{admin.user.edit.details.searchGroup}" 
+                       oninput="searchGroups()" th:field="*{groupName}" autocomplete="off">
+              </div>
+              <div class="dropdown" id="groupDropdown" style="display: none;">
+                <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
+                  <div class="dropdown-content" id="groupResults"></div>
+                </div>
+              </div>
+            </div>
+            <div id="pagination-controls"></div>
+            <div class="control">
+              <button class="button is-primary" type="submit" th:text="#{admin.user.edit.details.button}">
+                Edit Details
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <script>
+  	async function searchGroups() {
+  	  const query = document.getElementById('groupSearchInput').value;
+      const groupDropdown = document.getElementById('groupDropdown');
+      const groupResults = document.getElementById('groupResults');
+
+      if (query.length < 1) {
+        groupDropdown.style.display = 'none';
+        return;
+      }
+
+      const response = await fetch(`/admin/groups/search?keyword=${query}`);
+      const groups = await response.json();
+ 
+      groupResults.innerHTML = '';
+      groups.forEach(group => {
+        const groupItem = document.createElement('a');
+        groupItem.className = 'dropdown-item';
+        groupItem.textContent = group.name;
+        groupItem.onclick = () => selectGroup(group.name);
+        groupResults.appendChild(groupItem);
+      });
+ 
+      groupDropdown.style.display = groups.length > 0 ? 'block' : 'none';
+      groupDropdown.classList.toggle('is-active', groups.length > 0);
+    }
+
+    function selectGroup(groupName) {
+      document.getElementById('groupSearchInput').value = groupName;
+      document.getElementById('groupDropdown').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

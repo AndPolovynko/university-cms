@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.user.create')}"></head>
+<head>
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+    <div class="container is-max-desktop mb-6">
+      <h2 class="title mt-4" th:text="#{admin.user.create.header}">User Creation</h2>
+      <form th:object="${user}" th:action="@{create}" th:method="post">
+        <div class="field">
+          <label class="label" for="login" th:text="#{admin.user.create.login}">Login:</label>
+          <div class="control">
+            <input class="input" type="text" th:field="*{login}" autocomplete="off" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="password" th:text="#{admin.user.create.password}">Password:</label>
+          <div class="control">
+            <input class="input" type="password" th:field="*{password}" autocomplete="off" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="email" th:text="#{admin.user.create.email}">Email:</label>
+          <div class="control">
+            <input class="input" type="text" th:field="*{email}" autocomplete="off" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" th:text="#{admin.user.create.roles}">Roles:</label>
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" id="adminCheckbox" onchange="toggleJobTitle()" th:field="*{roles}" value="ADMINISTRATOR" />
+              <span th:text="#{admin.user.create.role.admin}">Admin</span>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" th:field="*{roles}" value="TEACHER" />
+              <span th:text="#{admin.user.create.role.teacher}">Teacher</span>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="studentCheckbox" onchange="toggleJobTitle()" th:field="*{roles}" value="STUDENT" />
+              <span th:text="#{admin.user.create.role.student}">Student</span>
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="firstName" th:text="#{admin.user.create.firstName}">First Name:</label>
+          <div class="control">
+            <input class="input" type="text" th:field="*{firstName}" autocomplete="off" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="lastName" th:text="#{admin.user.create.lastName}">Surname:</label>
+          <div class="control">
+            <input class="input" type="text" th:field="*{lastName}" autocomplete="off" />
+          </div>
+        </div>
+        <div id="jobTitleField" style="display: none;" class="field">
+          <label class="label" for="jobTitle" th:text="#{admin.user.create.jobTitle}">Job Title:</label>
+          <div class="control">
+            <input class="input" type="text" th:field="*{jobTitle}" autocomplete="off" />
+          </div>
+        </div>
+        <div id="groupNameField" class="field" style="display: none;">
+          <label class="label" th:text="#{admin.user.create.group}">Group</label>
+          <div class="control">
+            <input class="input" type="text" id="groupSearchInput" th:placeholder="#{admin.user.create.searchGroup}" oninput="searchGroups()" th:field="*{groupName}" autocomplete="off">
+          </div>
+          <div class="dropdown" id="groupDropdown" style="display: none;">
+            <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
+              <div class="dropdown-content" id="groupResults"></div>
+            </div>
+          </div>
+        </div>
+        <div class="control">
+          <input class="button is-primary" type="submit" th:value="#{admin.user.create.submit}" value="Create">
+        </div>
+      </form>
+    </div>
+
+  
+  <script>
+    function toggleJobTitle() {
+      const adminCheckbox = document.getElementById("adminCheckbox");
+      const studentCheckbox = document.getElementById("studentCheckbox")
+      const jobTitleField = document.getElementById("jobTitleField");
+      const groupNameField = document.getElementById("groupNameField");
+      
+      jobTitleField.style.display = adminCheckbox.checked ? "block" : "none";
+      groupNameField.style.display = studentCheckbox.checked ? "block" : "none";
+    }
+
+    async function searchGroups() {
+      const query = document.getElementById('groupSearchInput').value;
+      const groupDropdown = document.getElementById('groupDropdown');
+      const groupResults = document.getElementById('groupResults');
+
+      if (query.length < 1) {
+        groupDropdown.style.display = 'none';
+        return;
+      }
+
+      const response = await fetch(`/admin/groups/search?keyword=${query}`);
+      const groups = await response.json();
+
+      groupResults.innerHTML = '';
+      groups.forEach(group => {
+        const groupItem = document.createElement('a');
+        groupItem.className = 'dropdown-item';
+        groupItem.textContent = group.name;
+        groupItem.onclick = () => selectGroup(group.name);
+        groupResults.appendChild(groupItem);
+      });
+
+      groupDropdown.style.display = groups.length > 0 ? 'block' : 'none';
+      groupDropdown.classList.toggle('is-active', groups.length > 0);
+    }
+
+    function selectGroup(groupName) {
+      document.getElementById('groupSearchInput').value = groupName;
+      document.getElementById('groupDropdown').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

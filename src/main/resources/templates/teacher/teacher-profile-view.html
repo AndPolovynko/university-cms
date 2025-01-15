@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.teacher.profile')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: teacher}"></div>
+  <div class="container is-max-desktop mt-6">
+    <div class="box">
+      <h4 class="title has-text-centered mb-4 is-size-3" th:text="#{teacher.profile.header}">Your Teacher Profile</h4>
+      <p class="subtitle">
+       <span th:text="#{user.profile.login}"></span> <span class="has-text-weight-semibold" th:text="${user.login}">User Login</span>
+      </p>
+      <p class="subtitle">
+        <span th:text="#{user.profile.email}"></span> <span class="has-text-weight-semibold" th:text="${user.email}">Email</span>
+      </p>
+      <p class="subtitle">
+        <span th:text="#{user.profile.name}"></span> <span class="has-text-weight-semibold" th:text="${user.firstName} + ' ' + ${user.lastName}">John Silver</span>
+      </p>
+      <p class="subtitle">
+        <span th:text="#{user.profile.roles}"></span> <span class="has-text-weight-semibold" th:text="${user.roles}">[Administrator, Teacher]</span>
+      </p>
+      <p class="subtitle" th:if="${#lists.contains(user.roles, 'ADMINISTRATOR')}">
+        <span th:text="#{user.profile.job}"></span> <span class="has-text-weight-semibold" th:text="${user.jobTitle}">Secretary</span>
+      </p>
+      <p class="subtitle" th:if="${#lists.contains(user.roles, 'STUDENT')}">
+        <span th:text="#{user.profile.group}"></span> <span class="has-text-weight-semibold" th:text="${user.groupName}">5a</span>
+      </p>
+      
+      <div class="buttons mt-5 is-centered">
+        <form th:if="${#lists.contains(user.roles, 'ADMINISTRATOR')}" th:action="@{/admin}" th:method="get" style="display: inline;">
+          <button class="button" type="submit" th:text="#{user.profile.menu-change.button.admin}">To Admin Menu</button>
+        </form>
+        <form th:if="${#lists.contains(user.roles, 'STUDENT')}" th:action="@{/teacher}" th:method="get" style="display: inline;">
+          <button class="button" type="submit" th:text="#{user.profile.menu-change.button.student}">To Teacher Menu</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<body>
+  <div th:fragment="pagination-bar(totalPages, currentPage, keyword, entities)" class="has-text-centered">
+    <nav class="pagination" th:if="${totalPages > 0}" role="navigation" aria-label="pagination">
+      <ul class="pagination-list">
+        <li class="pagination-item" th:style="${currentPage == 1} ? 'display: none;' : ''">
+          <a th:replace="this :: paging(1, '<<', 'First Page', ${keyword})" class="pagination-link" aria-label="First Page"></a>
+        </li>
+        <li class="pagination-item" th:style="${currentPage == 1} ? 'display: none;' : ''">
+          <a th:replace="this :: paging(${currentPage - 1}, 'Prev', 'Previous Page', ${keyword})" class="pagination-link" aria-label="Previous Page"></a>
+        </li>
+        <li class="pagination-item" th:if="${currentPage - 2 > 1}">
+          <a class="pagination-link" href="#">...</a>
+        </li>
+        <li class="pagination-item" th:classappend="${page == currentPage} ? 'is-current'" th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
+          <a th:replace="this :: paging(${page}, ${page}, 'Page ' + ${page}, ${keyword})" class="pagination-link"></a>
+        </li>
+        <li class="pagination-item" th:if="${currentPage + 2 < totalPages}">
+          <a class="pagination-link" href="#">...</a>
+        </li>
+        <li class="pagination-item" th:style="${currentPage == totalPages} ? 'display: none;' : ''">
+          <a th:replace="this :: paging(${currentPage + 1}, 'Next', 'Next Page', ${keyword})" class="pagination-link" aria-label="Next Page"></a>
+        </li>
+        <li class="pagination-item" th:style="${currentPage == totalPages} ? 'display: none;' : ''">
+          <a th:replace="this :: paging(${totalPages}, '>>', 'Last Page', ${keyword})" class="pagination-link" aria-label="Last Page"></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <a th:fragment="paging(pageNumber, label, tooltip, keyword)" class="pagination-link"
+     th:href="@{${entities} + '?' + 'keyword=' + ${keyword} + '&' + 'pageNumber=' + ${pageNumber}}"
+     th:title="${tooltip}" rel="tooltip">[[${label}]]</a>
+</body>
+</html>

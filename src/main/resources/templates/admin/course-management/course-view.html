@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.course')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop mt-6">
+    <div class="box">
+      <h4 class="title has-text-centered mb-4 is-size-3" th:text="#{admin.courses.info.header}">Course info</h4>
+      <p class="subtitle">
+        <span th:text="#{admin.courses.name}">Name:</span> <span class="has-text-weight-semibold" th:text="${course.name}"></span>
+      </p>
+      <p class="subtitle">
+        <span th:text="#{admin.courses.description}">Description:</span> <span class="has-text-weight-semibold" th:text="${course.description}"></span>
+      </p>
+      
+      <div class="buttons mt-5 is-centered">
+        <form th:action="@{/admin/courses/edit/{id}(id=${course.id})}" th:method="get" style="display: inline;">
+          <button class="button is-warning" name="edit" value="Edit" type="submit" th:text="#{admin.courses.edit}">Edit</button>
+        </form>
+        <form th:action="@{/admin/courses/{id}(id=${course.id})}" th:method="delete" style="display: inline;">
+          <button class="button is-danger" name="delete" value="Delete" th:text="#{admin.courses.delete}">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.guest.login')}"></head>
+<body>
+  <nav th:replace="~{fragments/navigation-bar :: guest}"></nav>
+  <div class="container has-text-centered is-max-desktop mt-6" style="width: 500px;">
+    <div class="box">
+      <h1 class="title" th:text="#{guest.login.message}">Please Log In</h1>
+      <div th:if="${param.error}" class="notification is-danger" th:text="#{guest.login.error}">Error</div>
+      <form th:action="@{/login}" method="post">
+        <div class="field">
+          <div class="control">
+            <input class="input" type="text" name="username" th:placeholder="#{guest.login.placeholder.username}" />
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <input class="input" type="password" name="password" th:placeholder="#{guest.login.placeholder.password}" />
+          </div>
+        </div>
+        <div class="control">
+          <input class="button is-primary" type="submit" th:value="#{guest.login.button}" />
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

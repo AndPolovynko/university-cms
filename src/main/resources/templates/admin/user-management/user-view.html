@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.user')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop mt-6">
+    <div class="box">
+      <h4 class="title has-text-centered mb-4 is-size-3">
+        <span th:text="${user.login}">User Login</span><span th:text="#{admin.user.header}">'s profile</span>
+      </h4>
+      <p class="subtitle">
+        <span th:text="#{user.profile.name}"></span> <span class="has-text-weight-semibold" th:text="${user.firstName} + ' ' + ${user.lastName}">John Silver</span>
+      </p>
+      <p class="subtitle">
+        <span th:text="#{user.profile.email}"></span> <span class="has-text-weight-semibold" th:text="${user.email}">mail@box.com</span>
+      </p>
+      <p class="subtitle">
+        <span th:text="#{user.profile.login}"></span> <span class="has-text-weight-semibold" th:text="${user.login}">User Login</span>
+      </p>
+      <p class="subtitle">
+        <span th:text="#{user.profile.roles}"></span> <span class="has-text-weight-semibold" th:text="${user.roles}">[Administrator, Teacher]</span>
+      </p>
+      <p class="subtitle" th:if="${#lists.contains(user.roles, 'ADMINISTRATOR')}">
+        <span th:text="#{user.profile.job}"></span> <span class="has-text-weight-semibold" th:text="${user.jobTitle}">Secretary</span>
+      </p>
+      <p class="subtitle" th:if="${#lists.contains(user.roles, 'STUDENT')}">
+        <span th:text="#{user.profile.group}"></span> <span class="has-text-weight-semibold" th:text="${user.groupName}">5a</span>
+      </p>
+      
+      <div class="buttons mt-5 is-centered">
+        <form th:action="@{/admin/users/edit/{id}(id=${user.id})}" th:method="get" style="display: inline;">
+          <button class="button is-warning" name="edit" value="Edit" type="submit"
+                  th:text="#{admin.button.edit}">
+            Edit
+          </button>
+        </form>
+        <form th:action="@{/admin/users/{id}(id=${user.id})}" th:method="delete" style="display: inline;">
+          <button class="button is-danger" name="delete" value="Delete"
+                  th:text="#{admin.button.delete}">
+            Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

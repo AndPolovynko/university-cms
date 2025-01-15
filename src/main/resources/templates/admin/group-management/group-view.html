@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.group')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop mt-6">
+    <div class="box">
+      <h4 class="title has-text-centered mb-4 is-size-3" th:text="#{admin.groups.infoTitle}">Group info</h4>
+      <p class="subtitle">
+        <span th:text="#{admin.groups.nameLabel}">Name:</span> <span class="has-text-weight-semibold" th:text="${group.name}">John Silver</span>
+      </p>
+      
+      <div class="buttons mt-5 is-centered">
+        <form th:action="@{/admin/groups/edit/{id}(id=${group.id})}" th:method="get" style="display: inline;">
+          <button class="button is-warning" name="edit" value="Edit" type="submit" th:text="#{admin.groups.editButton}">Edit</button>
+        </form>
+        <form th:action="@{/admin/groups/{id}(id=${group.id})}" th:method="delete" style="display: inline;">
+          <button class="button is-danger" name="delete" value="Delete" th:text="#{admin.groups.deleteButton}">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

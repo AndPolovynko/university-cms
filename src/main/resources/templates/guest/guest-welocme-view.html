@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.guest.welcome')}"></head>
+<body>
+  <nav th:replace="~{fragments/navigation-bar :: guest}"></nav>
+  <div class="container">
+    <h2 class="mt-4 title is-2" th:text="#{guest.welcome.header}">Header</h2>
+    <p class="subtitle" th:text="#{guest.welcome.description}">Description</p>
+    <a th:href="@{/login}" class="button is-primary" th:text="#{guest.login.button}">Button</a>
+  </div>
+</body>
+</html>

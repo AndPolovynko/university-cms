@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.class')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+    <div class="container is-max-desktop mt-6">
+      <div class="box">
+        <h4 class="title has-text-centered is-size-3 mb-4" th:text="#{admin.class.info.header}">Class info</h4>
+    
+        <p class="subtitle">
+          <span th:text="#{admin.class.info.course}">Course:</span>
+          <span class="has-text-weight-semibold" th:text="${class.course}">Course</span>
+        </p>
+        <p class="subtitle">
+          <span th:text="#{admin.class.info.dateTime}">Date & Time:</span>
+          <span class="has-text-weight-semibold" th:text="${class.dateTime}">Date & Time</span>
+        </p>
+        <p class="subtitle">
+          <span th:text="#{admin.class.info.type}">Type:</span>
+          <span class="has-text-weight-semibold" th:text="${class.type}">Lecture</span>
+        </p>
+        <p class="subtitle">
+          <span th:text="#{admin.class.info.venue}">Venue:</span>
+          <span class="has-text-weight-semibold" th:text="${class.venue}">Room 311</span>
+        </p>
+        <p class="subtitle">
+          <span th:text="#{admin.class.info.groups}">Groups:</span>
+          <span class="has-text-weight-semibold" th:text="${class.groupNames}">[1, 5a]</span>
+        </p>
+        <p class="subtitle">
+          <span th:text="#{admin.class.info.teachers}">Teachers:</span>
+          <span class="has-text-weight-semibold" th:text="${class.teacherLogins}">[John Silver, Teach Teachson]</span>
+        </p>
+    
+        <div class="buttons mt-5 is-centered">
+          <form th:action="@{/admin/classes/edit/{id}(id=${class.id})}" th:method="get" style="display: inline;">
+            <button class="button is-warning" name="edit" value="Edit" type="submit" th:text="#{admin.class.info.edit}">Edit</button>
+          </form>
+          <form th:action="@{/admin/classes/{id}(id=${class.id})}" th:method="delete" style="display: inline;">
+            <button class="button is-danger" name="delete" value="Delete" th:text="#{admin.class.info.delete}">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

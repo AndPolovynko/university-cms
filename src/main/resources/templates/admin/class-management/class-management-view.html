@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.class-management')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop is-centered mt-6 mb-6">
+    <h2 class="title is-3">
+      <span th:text="#{admin.classes.header}">Classes</span>
+      <a th:href="@{/admin/classes/create}" class="button is-primary is-pulled-right" th:text="#{admin.classes.create}">+ Create</a>
+    </h2>
+    <form class="field has-addons" method="get" th:action="@{classes}">
+      <div class="control is-expanded">
+        <input name="keyword" class="input" th:placeholder="#{admin.classes.search.placeholder}" th:value="${keyword}" type="text">
+      </div>
+      <div class="control">
+        <button class="button" type="submit" th:text="#{admin.classes.search.button}">Search</button>
+      </div>
+    </form>
+    <table class="table is-striped is-hoverable is-fullwidth mt-4">
+      <thead>
+        <tr>
+          <th th:text="#{admin.classes.table.course}">Course</th>
+          <th th:text="#{admin.classes.table.type}">Type</th>
+          <th th:text="#{admin.classes.table.dateTime}">Date & Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="class: ${classes}">
+          <td>
+            <a th:text="${class.course}" th:href="@{classes/{id}(id=${class.id})}"></a>
+          </td>
+          <td th:text="${class.type}"></td>
+          <td th:text="${class.dateTime}"></td>
+        </tr>
+      </tbody>
+    </table>
+    <div th:replace="~{fragments/pagination-bar :: pagination-bar (${totalPages}, ${currentPage}, ${keyword}, 'classes')}"></div>
+  </div>
+</body>
+</html>

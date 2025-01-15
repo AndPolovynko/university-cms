@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.student.schedule')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: student}"></div>
+  <div class="container is-max-desktop mt-4">
+    <h1 class="title has-text-centered mb-4 is-size-3" th:text="#{student.timetable.header}">Timetable</h1>
+    <div class="columns">
+      <div class="column is-half">
+        <p class="is-size-6 has-text-weight-medium">
+          <span th:text="#{student.timetable.description.1}">In this table, you can view your schedule for today. 
+          You also have the option to navigate to your schedule for the current </span>
+          <a th:href="@{/student/timetable/this-week}" th:text="#{student.timetable.link.week}">week</a> 
+          <span th:text="#{student.timetable.description.2}">or</span> 
+          <a th:href="@{/student/timetable/this-month}" th:text="#{student.timetable.link.month}">the entire month</a>. 
+          <span th:text="#{student.timetable.description.3}">Additionally, you can define a custom date range to view 
+          specific days that are most relevant to you.</span>
+        </p>
+        <h1 class="title has-text-centered m-4 is-size-5" th:text="#{student.timetable.date-range.header}">
+          Specify Date Range
+        </h1>
+        <div class="columns mb-0">
+          <div class="column is-half">
+            <input class="input" id="startDate" type="date" autocomplete="off"/>
+          </div>
+          <div class="column is-half">
+            <input class="input" id="endDate" type="date" autocomplete="off"/>
+          </div>
+        </div>
+        <div class="is-flex is-justify-content-center mt-0">
+          <a class="button is-primary" id="viewTimetableButton" href="#" th:text="#{student.timetable.button}">
+            View Timetable
+          </a>
+        </div>
+      </div>
+      <div class="column is-half">
+      <h4 class="title has-text-centered mb-4 is-size-4" th:text="#{student.timetable.today-schedule.header}">
+        Your schedule for today:
+      </h4>
+        <th:block th:each="entry : ${classes}">
+          <h1 th:if="${#maps.isEmpty(entry.value)}" class="title has-text-centered mb-4 is-size-6"
+              th:text="#{student.timetable.today-schedule.no-classes.message}">
+            Phew! No classes today.
+          </h1>
+          <th:block th:each="entry : ${entry.value}">
+            <div class="box mr-3">
+              <h4 class="title has-text-centered mb-4 is-size-5" th:text="${entry.key}">Date</h4>
+              <table class="table is-fullwidth">
+                <tbody>
+                  <tr th:each="class : ${entry.value}">
+                    <td th:text="${class.dateTime}"></td>
+                    <td>
+                      <a th:text="${class.course}"></a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </th:block>
+        </th:block>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  const startDateInput = document.getElementById('startDate');
+  const endDateInput = document.getElementById('endDate');
+  const viewTimetableButton = document.getElementById('viewTimetableButton');
+  
+  startDateInput.addEventListener('input', updateLink);
+  endDateInput.addEventListener('input', updateLink);
+
+  function updateLink() {
+    const startDate = startDateInput.value;
+    const endDate = endDateInput.value;
+
+    if (startDate && endDate) {
+      viewTimetableButton.href = `/student/timetable/custom-range?customRange=${startDate}_${endDate}`;
+    } else {
+      viewTimetableButton.href = '#';
+    }
+  }
+</script>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.user-management')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop is-centered mt-6 mb-6">
+    <h2 class="title is-3">
+      <span th:text="#{admin.user-management.header}">Users </span>
+      <a th:href="@{/admin/users/create}" class="button is-primary is-pulled-right"
+         th:text="#{admin.button.create}">
+        + Create
+      </a>
+    </h2>
+    <form class="field has-addons" method="get" th:action="@{users}">
+      <div class="control is-expanded">
+        <input name="keyword" class="input" th:placeholder="#{admin.placeholder.search}" 
+               th:value="${keyword}" type="text">
+      </div>
+      <div class="control">
+        <button class="button" type="submit"
+                th:text="#{admin.button.search}">
+          Search
+        </button>
+      </div>
+    </form>
+    <table class="table is-striped is-hoverable is-fullwidth">
+      <thead>
+        <tr>
+          <th th:text="#{admin.user-management.table.column.1}">User</th>
+          <th th:text="#{admin.user-management.table.column.2}">Roles</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="user: ${users}">
+          <td>
+            <a th:text="${user.firstName} + ' ' + ${user.lastName}" th:href="@{users/{id}(id=${user.id})}"></a>
+            <span th:text="' (login: ' + ${user.login} + ')'"></span>
+          </td>
+          <td th:text="${user.roles}"></td>
+        </tr>
+      </tbody>
+    </table>
+    <div th:replace="~{fragments/pagination-bar :: pagination-bar (${totalPages}, ${currentPage}, ${keyword}, 'users')}"></div>
+  </div>
+</body>
+</html>

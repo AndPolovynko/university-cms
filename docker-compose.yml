@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16.4
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: pg
+      POSTGRES_DB: university
+  
+  flyway:
+    image: flyway/flyway:latest
+    environment:
+      FLYWAY_URL: jdbc:postgresql://db:5432/university
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: pg
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql
+      FLYWAY_SCHEMAS: public
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+    entrypoint: >
+      /bin/bash -c "
+      for i in {1..10}; do
+        if echo > /dev/tcp/db/5432; then
+          flyway migrate && exit 0;
+        fi;
+        echo 'Waiting for db to be ready...';
+        sleep 5;
+      done;
+      echo 'Database not ready after 50 seconds' && exit 1;"
+    depends_on:
+      - db
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - spring.profiles.active=docker
+    depends_on:
+      - db
+      - flyway

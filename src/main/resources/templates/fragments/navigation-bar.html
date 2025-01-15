@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<body>
+  <nav th:fragment="guest" class="navbar has-shadow" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a th:href="@{/}" class="navbar-item">
+        UniversityCMS
+      </a>
+    </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <form method="get" action="#" class="is-flex is-align-items-center">
+            <div class="control">
+              <div class="select">
+                <select name="lang" onchange="this.form.submit()">
+                  <option value="" disabled selected th:text="#{navbar.language}">Language</option>
+                  <option value="en" th:text="#{navbar.language.en}">English</option>
+                  <option value="ua" th:text="#{navbar.language.ua}">Ukrainian</option>
+                </select>
+              </div>
+            </div>
+          </form>
+          <a th:href="@{/}" class="navbar-item" th:text="#{navbar.guest.home}">Home</a>
+          <a th:href="@{/login}" class="navbar-item" th:text="#{navbar.guest.login}">Log in</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <nav th:fragment="admin" class="navbar has-shadow" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a th:href="@{/}" class="navbar-item">
+        UniversityCMS
+      </a>
+    </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <form method="get" action="#" class="is-flex is-align-items-center">
+            <div class="control">
+              <div class="select">
+                <select name="lang" onchange="this.form.submit()">
+                  <option value="" disabled selected>Language</option>
+                  <option value="en">English</option>
+                  <option value="ua">Ukrainian</option>
+                </select>
+              </div>
+            </div>
+          </form>
+          <a th:href="@{/admin}" class="navbar-item" th:text="#{navbar.user.profile}">My Profile</a>
+          <a th:href="@{/admin/courses}" class="navbar-item" th:text="#{navbar.admin.courses}">Course Management</a>
+          <a th:href="@{/admin/groups}" class="navbar-item" th:text="#{navbar.admin.groups}">Group Management</a>
+          <a th:href="@{/admin/users}" class="navbar-item" th:text="#{navbar.admin.users}">User Management</a>
+          <a th:href="@{/admin/classes}" class="navbar-item" th:text="#{navbar.admin.classes}">Class Management</a>
+          <form th:action="@{/logout}" th:method="post">
+            <button class="navbar-item" th:text="#{navbar.user.logout}">Log out</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <nav th:fragment="student" class="navbar has-shadow" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a th:href="@{/}" class="navbar-item">
+        UniversityCMS
+      </a>
+    </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <form method="get" action="#" class="is-flex is-align-items-center">
+            <div class="control">
+              <div class="select">
+                <select name="lang" onchange="this.form.submit()">
+                  <option value="" disabled selected>Language</option>
+                  <option value="en">English</option>
+                  <option value="ua">Ukrainian</option>
+                </select>
+              </div>
+            </div>
+          </form>
+          <a th:href="@{/student}" class="navbar-item" th:text="#{navbar.user.profile}">My Profile</a>
+          <a th:href="@{/student/timetable/today}" class="navbar-item" th:text="#{navbar.user.timetable}">Timetable</a>
+          <form th:action="@{/logout}" th:method="post">
+            <button class="navbar-item" th:text="#{navbar.user.logout}">Log out</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <nav th:fragment="teacher" class="navbar has-shadow" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a th:href="@{/}" class="navbar-item">
+        UniversityCMS
+      </a>
+    </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <form method="get" action="#" class="is-flex is-align-items-center">
+            <div class="control">
+              <div class="select">
+                <select name="lang" onchange="this.form.submit()">
+                  <option value="" disabled selected>Language</option>
+                  <option value="en">English</option>
+                  <option value="ua">Ukrainian</option>
+                </select>
+              </div>
+            </div>
+          </form>
+          <a th:href="@{/teacher}" class="navbar-item" th:text="#{navbar.user.profile}">My Profile</a>
+          <a th:href="@{/teacher/timetable/today}" class="navbar-item" th:text="#{navbar.user.timetable}">Timetable</a>
+          <form th:action="@{/logout}" th:method="post">
+            <button class="navbar-item" th:text="#{navbar.user.logout}">Log out</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </nav>
+</body>
+</html>

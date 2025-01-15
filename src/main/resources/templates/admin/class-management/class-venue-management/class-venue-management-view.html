@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.venue-management')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop is-centered mt-6 mb-6">
+    <h2 class="title is-3">
+      <span th:text="#{admin.venues.header}">Venues</span>
+      <a th:href="@{/admin/classes/venues/create}" class="button is-primary is-pulled-right" th:text="#{admin.venues.create}">+ Create</a>
+    </h2>
+    <form class="field has-addons" method="get" th:action="@{venues}">
+      <div class="control is-expanded">
+        <input name="keyword" class="input" th:placeholder="#{admin.venues.search.placeholder}" th:value="${keyword}" type="text">
+      </div>
+      <div class="control">
+        <button class="button" type="submit" th:text="#{admin.venues.search.button}">Search</button>
+      </div>
+    </form>
+    <table class="table is-striped is-hoverable is-fullwidth">
+      <thead>
+        <tr>
+          <th th:text="#{admin.venues.table.name}">Name</th>
+          <th th:text="#{admin.venues.table.description}">Description</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="venue: ${venues}">
+          <td class="is-vcentered">
+            <p th:text="${venue.name}"></p>
+          </td>
+          <td class="is-vcentered">
+            <p th:text="${venue.description}"></p>
+          </td>
+          <td class="has-text-right is-vcentered">
+            <form th:action="@{/admin/classes/venues/edit/{id}(id=${venue.id})}" th:method="get" style="display: inline;">
+              <button class="button is-warning is-small" name="edit" value="Edit" type="submit" th:text="#{admin.venues.table.edit}">Edit</button>
+            </form>
+            <form th:action="@{/admin/classes/venues/{id}(id=${venue.id})}" th:method="delete" style="display: inline;">
+              <button class="button is-danger is-small" name="delete" value="Delete" th:text="#{admin.venues.table.delete}">Delete</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div th:replace="~{fragments/pagination-bar :: pagination-bar (${totalPages}, ${currentPage}, ${keyword}, 'venues')}"></div>
+  </div>
+</body>
+</html>

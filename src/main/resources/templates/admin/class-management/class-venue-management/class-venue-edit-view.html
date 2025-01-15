@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.admin.venue.edit')}"></head>
+<body>
+  <div th:replace="~{fragments/navigation-bar :: admin}"></div>
+  <div class="container is-max-desktop mt-5">
+    <h2 class="title is-4" th:text="#{admin.venues.edit.header}">Venue Edition</h2>
+    <form th:object="${venue}" th:action="@{{id}(id=${venue.id})}" th:method="put">
+      <input type="hidden" th:field="*{id}">
+      
+      <div class="field">
+        <label class="label" for="name" th:text="#{admin.venues.edit.name}">Name:</label>
+        <div class="control">
+          <input class="input" type="text" th:field="*{name}" />
+        </div>
+      </div>
+      
+      <div class="field">
+        <label class="label" for="description" th:text="#{admin.venues.edit.description}">Description:</label>
+        <div class="control">
+          <input class="input" type="text" th:field="*{description}" />
+        </div>
+      </div>
+  
+      <div class="field">
+        <div class="control">
+          <input class="button is-primary" type="submit" th:value="#{admin.venues.edit.submit}" />
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
