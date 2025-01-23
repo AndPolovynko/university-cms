@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class Group implements Identifiable<String> {
   private String id;
 
   @Column(name = "name")
+  @NotBlank(message = "Group name cannot be blank.")
   private String name;
   
   @ManyToMany(mappedBy = "groups")

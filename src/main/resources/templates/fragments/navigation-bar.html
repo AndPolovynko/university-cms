@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:th="thymeleaf.org">
 <body>
+  <nav th:fragment="empty" class="navbar has-shadow" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a th:href="@{/}" class="navbar-item">
+        UniversityCMS
+      </a>
+    </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <form method="get" action="#" class="is-flex is-align-items-center">
+            <div class="control">
+              <div class="select">
+                <select name="lang" onchange="this.form.submit()">
+                  <option value="" disabled selected th:text="#{navbar.language}">Language</option>
+                  <option value="en" th:text="#{navbar.language.en}">English</option>
+                  <option value="ua" th:text="#{navbar.language.ua}">Ukrainian</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </nav>
+
   <nav th:fragment="guest" class="navbar has-shadow" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a th:href="@{/}" class="navbar-item">

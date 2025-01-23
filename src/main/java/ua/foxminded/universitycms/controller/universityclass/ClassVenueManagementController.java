@@ -1,10 +1,7 @@
 package ua.foxminded.universitycms.controller.universityclass;
 
-import lombok.RequiredArgsConstructor;
-import ua.foxminded.universitycms.dto.UniversityClassVenueCreateRequest;
-import ua.foxminded.universitycms.dto.UniversityClassVenueEditRequest;
-import ua.foxminded.universitycms.dto.UniversityClassVenueResponse;
-import ua.foxminded.universitycms.service.UniversityClassVenueService;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,10 +9,21 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import ua.foxminded.universitycms.dto.UniversityClassVenueCreateRequest;
+import ua.foxminded.universitycms.dto.UniversityClassVenueEditRequest;
+import ua.foxminded.universitycms.dto.UniversityClassVenueResponse;
+import ua.foxminded.universitycms.service.UniversityClassVenueService;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Controller

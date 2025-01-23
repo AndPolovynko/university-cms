@@ -10,7 +10,7 @@
         <label class="label" for="course" th:text="#{admin.class.edit.course.label}">Course:</label>
         <div class="control">
           <input class="input" type="text" id="courseSearchInput" th:placeholder="#{admin.class.edit.course.placeholder}" 
-            oninput="searchCourses()" th:field="*{course}" autocomplete="off">
+            oninput="searchCourses()" th:field="*{course}" autocomplete="off" required>
         </div>
         <div class="dropdown" id="courseDropdown" style="display: none;">
           <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
@@ -48,7 +48,7 @@
           <div class="field">
             <div class="control is-expanded">
               <input class="input" type="text" id="venueSearchInput" th:placeholder="#{admin.class.edit.venue.placeholder}" 
-                oninput="searchVenues()" th:field="*{venue}" autocomplete="off">
+                oninput="searchVenues()" th:field="*{venue}" autocomplete="off" required>
             </div>
           </div>
           <div class="field">
@@ -69,7 +69,7 @@
         <ul>
           <li th:each="group, iterStat : *{groupNames}">
             <div class="mt-2">
-              <input readonly class="input" type="text" th:name="groupNames" th:value="${group}" />
+              <input readonly class="input" type="text" th:name="groupNames" th:value="${group}" required>
               <button type="button" onclick="removeInput(this)" th:text="#{admin.class.edit.group.remove}">Remove</button>
             </div>
           </li>
@@ -90,7 +90,7 @@
         <ul>
           <li th:each="teacher, iterStat : *{teacherLogins}">
             <div class="mt-2">
-              <input readonly class="input" type="text" th:name="teacherLogins" th:value="${teacher}" />
+              <input readonly class="input" type="text" th:name="teacherLogins" th:value="${teacher}" required>
               <button type="button" onclick="removeInput(this)" th:text="#{admin.class.edit.teacher.remove}">Remove</button>
             </div>
           </li>

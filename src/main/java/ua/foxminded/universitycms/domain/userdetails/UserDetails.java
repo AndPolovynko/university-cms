@@ -9,6 +9,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,9 +35,11 @@ public abstract class UserDetails implements Identifiable<String> {
   private String id;
   
   @Column(name = "first_name")
+  @NotBlank(message = "User first name cannot be blank.")
   private String firstName;
   
   @Column(name = "last_name")
+  @NotBlank(message = "User last name cannot be blank.")
   private String lastName;
   
   @ManyToOne

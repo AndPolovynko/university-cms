@@ -4,10 +4,14 @@
 <body>
   <div th:replace="~{fragments/navigation-bar :: student}"></div>
   <div class="container is-max-desktop mt-5">
-    <h1 class="title has-text-centered mb-4 is-size-4" th:text="#{student.timetable.header}">
+    <h1 class="title has-text-centered mb-4 is-size-3" th:text="#{student.timetable.header}">
       Your Week
     </h1>
     <div class="columns is-centered is-gapless">
+      <div th:if="${classes.isEmpty()}" class="notification is-info title has-text-centered mb-4 is-size-6"
+           th:text="#{student.timetable.no-classes.message}">
+        Phew! No classes!
+      </div>
       <th:block th:each="entry : ${classes}">
         <th:block th:each="entry : ${entry.value}">
           <div class="column is-2">

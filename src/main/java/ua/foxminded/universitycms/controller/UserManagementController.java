@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,12 +20,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import lombok.RequiredArgsConstructor;
 import ua.foxminded.universitycms.dto.UserCreateRequest;
 import ua.foxminded.universitycms.dto.UserEditRequest;
 import ua.foxminded.universitycms.dto.UserResponse;
 import ua.foxminded.universitycms.service.UserService;
+import ua.foxminded.universitycms.service.exception.InvalidUserConfigurationException;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Controller
@@ -42,13 +46,13 @@ public class UserManagementController {
   @GetMapping
   public String getUsers(Model model, @RequestParam(defaultValue = "") String keyword,
       @RequestParam(defaultValue = "1") String pageNumber, @Value("${usersPerPage}") Integer pageSize) {
-    
+
     Integer pageNumberInt = Optional.of(pageNumber)
         .filter(param -> param.matches("\\d+"))
         .map(Integer::parseInt)
         .filter(num -> num > 0)
         .orElse(1);
-    
+
     Page<UserResponse> users = userService.getUserResponses(keyword, pageSize, pageNumberInt - 1);
     model.addAttribute("users", users.getContent());
     model.addAttribute("currentPage", users.getNumber() + 1);
@@ -104,5 +108,14 @@ public class UserManagementController {
   @PostMapping("/create")
   public String createUser(Model model, @ModelAttribute("user") UserCreateRequest request) {
     return "redirect:/admin/users/" + userService.saveFromRequest(request).getId();
+  }
+
+  @ExceptionHandler(InvalidUserConfigurationException.class)
+  public ModelAndView handleInvalidUserConfigurationException(InvalidUserConfigurationException ex) {
+    ModelAndView modelAndView = new ModelAndView("error/custom-error");
+    modelAndView.addObject("message", ex.getMessage());
+    modelAndView.addObject("error", "Internal Server Error");
+    modelAndView.addObject("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    return modelAndView;
   }
 }
