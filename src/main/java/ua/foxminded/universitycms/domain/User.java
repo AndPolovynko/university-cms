@@ -13,6 +13,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,26 +36,25 @@ public class User implements Identifiable<String> {
   @IDGenerator
   @Column(name = "id")
   private String id;
-  
+
   @Column(name = "login")
+  @NotBlank(message = "User login cannot be blank.")
+  @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Login can only contain Latin letters, numbers, and underscores.")
   private String login;
-  
+
   @Column(name = "password")
   private String password;
-  
+
   @Column(name = "email")
   private String email;
-  
+
   @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-  @JoinTable(
-    name = "users_roles", 
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id"))
+  @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Role> roles;
-  
+
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<UserDetails> userDetailsList;
-  
+
   @ManyToMany(mappedBy = "teachers")
   @ToString.Exclude
   @EqualsAndHashCode.Exclude

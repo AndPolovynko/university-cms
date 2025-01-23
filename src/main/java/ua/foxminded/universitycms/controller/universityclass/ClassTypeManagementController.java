@@ -22,14 +22,14 @@ import ua.foxminded.universitycms.service.UniversityClassTypeService;
 @RequestMapping("admin/classes/types")
 public class ClassTypeManagementController {
   private final UniversityClassTypeService service;
-  
+
   @GetMapping
   public String getUniversityClassTypes(Model model) {
     List<UniversityClassTypeResponse> types = service.getUniversityClassTypeResponses();
     model.addAttribute("types", types);
     return "admin/class-management/class-type-management/class-type-management-view.html";
   }
-  
+
   @DeleteMapping("/{id}")
   public String deleteUniversityClassType(@PathVariable String id) {
     service.deleteById(id);

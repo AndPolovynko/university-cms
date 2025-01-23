@@ -34,14 +34,16 @@
         </div>
       </div>
       <div class="column is-half">
-      <h4 class="title has-text-centered mb-4 is-size-4" th:text="#{student.timetable.today-schedule.header}">
-        Your schedule for today:
-      </h4>
+        <h4 class="title has-text-centered mb-4 is-size-4" th:text="#{student.timetable.today-schedule.header}">
+          Your schedule for today:
+        </h4>
+        <div class="columns is-centered is-gapless">
+          <div th:if="${classes.isEmpty()}" class="notification is-info title has-text-centered mb-4 is-size-6"
+               th:text="#{student.timetable.today-schedule.no-classes.message}">
+            Phew! No classes!
+          </div>
+        </div>
         <th:block th:each="entry : ${classes}">
-          <h1 th:if="${#maps.isEmpty(entry.value)}" class="title has-text-centered mb-4 is-size-6"
-              th:text="#{student.timetable.today-schedule.no-classes.message}">
-            Phew! No classes today.
-          </h1>
           <th:block th:each="entry : ${entry.value}">
             <div class="box mr-3">
               <h4 class="title has-text-centered mb-4 is-size-5" th:text="${entry.key}">Date</h4>

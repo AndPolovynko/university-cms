@@ -28,8 +28,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.ServletException;
 import ua.foxminded.universitycms.SpringSecurityConfig;
@@ -39,11 +41,14 @@ import ua.foxminded.universitycms.dto.UserEditRequest;
 import ua.foxminded.universitycms.dto.UserResponse;
 import ua.foxminded.universitycms.service.GroupService;
 import ua.foxminded.universitycms.service.UserService;
+import ua.foxminded.universitycms.service.exception.InvalidUserConfigurationException;
 
 @WebMvcTest(UserManagementController.class)
 @Import(SpringSecurityConfig.class)
 @WithMockUser(roles = "ADMINISTRATOR")
 class UserManagementControllerTest {
+  private UserManagementController controller = new UserManagementController(null);
+  
   @Autowired
   private MockMvc mockMvc;
 
@@ -240,6 +245,19 @@ class UserManagementControllerTest {
         .andExpect(status().is3xxRedirection());
 
     verify(service, atLeastOnce()).saveFromRequest(getCreateRequest());
+  }
+  
+  @Test
+  void handleInvalidUserConfigurationExceptionShouldReturnExpectedModelAndView() {
+    InvalidUserConfigurationException ex = new InvalidUserConfigurationException("Invalid user configuration.");
+    ModelAndView modelAndView = controller.handleInvalidUserConfigurationException(ex);
+
+    ModelAndView expectedModelAndView = new ModelAndView();
+    expectedModelAndView.addObject("message", "Invalid user configuration.");
+    expectedModelAndView.addObject("error", "Internal Server Error");
+    expectedModelAndView.addObject("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+    assertThat(modelAndView.getModel()).isEqualTo(expectedModelAndView.getModel());
   }
 
   private UserResponse getResponse() {

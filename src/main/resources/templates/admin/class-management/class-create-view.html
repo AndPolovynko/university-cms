@@ -12,7 +12,7 @@
       <div class="field">
         <label class="label" for="course" th:text="#{admin.classes.create.course}">Course:</label>
         <div class="control">
-          <input class="input" type="text" id="courseSearchInput" th:placeholder="#{admin.classes.create.course.placeholder}" oninput="searchCourses()" th:field="*{course}" autocomplete="off">
+          <input class="input" type="text" id="courseSearchInput" th:placeholder="#{admin.classes.create.course.placeholder}" oninput="searchCourses()" th:field="*{course}" autocomplete="off" required>
         </div>
         <div class="dropdown" id="courseDropdown" style="display: none;">
           <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
@@ -49,7 +49,7 @@
         <div class="field-body">
           <div class="field">
             <div class="control is-expanded">
-              <input class="input" type="text" id="venueSearchInput" th:placeholder="#{admin.classes.create.venue.placeholder}" oninput="searchVenues()" th:field="*{venue}" autocomplete="off">
+              <input class="input" type="text" id="venueSearchInput" th:placeholder="#{admin.classes.create.venue.placeholder}" oninput="searchVenues()" th:field="*{venue}" autocomplete="off" required>
             </div>
           </div>
           <div class="field">
@@ -68,7 +68,7 @@
       <div class="field">
         <label class="label" for="group" th:text="#{admin.classes.create.group}">Groups:</label>
         <div class="control">
-          <input class="input" type="text" id="groupSearchInput" th:placeholder="#{admin.classes.create.group.placeholder}" oninput="searchGroups(this)" th:field="*{groupNames}" autocomplete="off">
+          <input class="input" type="text" id="groupSearchInput" th:placeholder="#{admin.classes.create.group.placeholder}" oninput="searchGroups(this)" th:field="*{groupNames}" autocomplete="off" required>
         </div>
         <div class="dropdown" id="groupDropdown" style="display: none;">
           <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
@@ -84,7 +84,7 @@
       <div class="field">
         <label class="label" for="user" th:text="#{admin.classes.create.teacher}">Teachers:</label>
         <div class="control">
-          <input class="input" type="text" id="userSearchInput" th:placeholder="#{admin.classes.create.teacher.placeholder}" oninput="searchUsers(this)" th:field="*{teacherLogins}" autocomplete="off">
+          <input class="input" type="text" id="userSearchInput" th:placeholder="#{admin.classes.create.teacher.placeholder}" oninput="searchUsers(this)" th:field="*{teacherLogins}" autocomplete="off" required>
         </div>
         <div class="dropdown" id="userDropdown" style="display: none;">
           <div class="dropdown-menu is-fullwidth" style="max-height: 100px; overflow-y: auto; width: 100%; background-color: #fff; border: 1px solid #dbdbdb; border-radius: 4px;">
@@ -100,7 +100,7 @@
       <div class="field">
         <label class="label" for="date" th:text="#{admin.classes.create.datetime}">Date & Time (UTC):</label>
         <div class="control">
-          <input class="input" type="datetime-local" th:field="*{dateTime}" autocomplete="off"/>
+          <input class="input" type="datetime-local" th:field="*{dateTime}" autocomplete="off" required>
         </div>
       </div>
       

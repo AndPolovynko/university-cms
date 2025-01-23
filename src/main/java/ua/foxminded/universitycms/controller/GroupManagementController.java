@@ -42,22 +42,22 @@ public class GroupManagementController {
   @GetMapping
   public String getGroups(Model model, @RequestParam(defaultValue = "") String keyword,
       @RequestParam(defaultValue = "1") String pageNumber, @Value("${groupsPerPage}") Integer pageSize) {
-    
+
     Integer pageNumberInt = Optional.of(pageNumber)
         .filter(param -> param.matches("\\d+"))
         .map(Integer::parseInt)
         .filter(num -> num > 0)
         .orElse(1);
-    
+
     Page<GroupResponse> groups = service.getGroupResponses(keyword, pageSize, pageNumberInt - 1);
-    
+
     model.addAttribute("groups", groups.getContent());
     model.addAttribute("currentPage", groups.getNumber() + 1);
     model.addAttribute("totalPages", groups.getTotalPages());
     model.addAttribute("keyword", keyword);
     return "admin/group-management/group-management-view";
   }
-  
+
   @GetMapping("/{id}")
   public String getGroup(Model model, @PathVariable String id) {
     GroupResponse group = service.getGroupResponseById(id);

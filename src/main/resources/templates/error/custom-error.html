@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="thymeleaf.org">
+<head th:replace="~{fragments/head :: head (title='title.error')}"></head>
+<body>
+  <nav th:replace="~{fragments/navigation-bar :: empty}"></nav>
+  <div class="container has-text-centered is-max-desktop mt-6" style="width: 500px;">
+    <div class="box">
+      <h1 class="title has-text-danger" th:text="#{error.header}">Error Occurred</h1>
+      <p>
+        <strong class="has-text-weight-bold" th:text="#{error.error}">Error:</strong>
+        <span th:text="${error}"></span>
+      </p>
+      <p>
+        <strong class="has-text-weight-bold" th:text="#{error.status}">Status:</strong>
+        <span th:text="${status}"></span>
+      </p>
+      <p class="mb-5">
+        <strong class="has-text-weight-bold" th:text="#{error.message}">Message:</strong>
+        <span th:text="${message}"></span>
+      </p>
+      <a href="javascript:history.back()" class="button is-primary" th:text="#{error.back.button}">Back</a>
+    </div>
+  </div>
+</body>

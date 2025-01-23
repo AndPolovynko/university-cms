@@ -1,6 +1,5 @@
 package ua.foxminded.universitycms.domain;
 
-
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -8,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +30,7 @@ public class Course implements Identifiable<String> {
   private String id;
   
   @Column(name = "name")
+  @NotBlank(message = "Course name cannot be blank.")
   private String name;
   
   @Column(name = "description")

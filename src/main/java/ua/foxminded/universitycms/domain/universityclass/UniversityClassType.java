@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class UniversityClassType implements Identifiable<String> {
   private String id;
   
   @Column(name = "name")
+  @NotBlank(message = "Class type name cannot be blank.")
   private String name;
   
   @OneToMany(mappedBy = "type", fetch = FetchType.EAGER)
