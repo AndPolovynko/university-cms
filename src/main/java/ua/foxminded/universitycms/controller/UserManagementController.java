@@ -45,18 +45,7 @@ public class UserManagementController {
   @GetMapping
   public String getUsers(Model model, @RequestParam(defaultValue = "") String keyword,
       @RequestParam(defaultValue = "1") String pageNumber, @Value("${usersPerPage}") Integer pageSize) {
-<<<<<<< Updated upstream
-
-    Integer pageNumberInt = Optional.of(pageNumber)
-        .filter(param -> param.matches("\\d+"))
-        .map(Integer::parseInt)
-        .filter(num -> num > 0)
-        .orElse(1);
-
-    Page<UserResponse> users = userService.getUserResponses(keyword, pageSize, pageNumberInt - 1);
-=======
     Page<UserResponse> users = userService.getUserResponses(keyword, pageSize, pageNumber);
->>>>>>> Stashed changes
     model.addAttribute("users", users.getContent());
     model.addAttribute("currentPage", users.getNumber() + 1);
     model.addAttribute("totalPages", users.getTotalPages());

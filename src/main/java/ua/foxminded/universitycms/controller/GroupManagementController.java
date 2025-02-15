@@ -41,19 +41,7 @@ public class GroupManagementController {
   @GetMapping
   public String getGroups(Model model, @RequestParam(defaultValue = "") String keyword,
       @RequestParam(defaultValue = "1") String pageNumber, @Value("${groupsPerPage}") Integer pageSize) {
-<<<<<<< Updated upstream
-
-    Integer pageNumberInt = Optional.of(pageNumber)
-        .filter(param -> param.matches("\\d+"))
-        .map(Integer::parseInt)
-        .filter(num -> num > 0)
-        .orElse(1);
-
-    Page<GroupResponse> groups = service.getGroupResponses(keyword, pageSize, pageNumberInt - 1);
-
-=======
     Page<GroupResponse> groups = service.getGroupResponses(keyword, pageSize, pageNumber);
->>>>>>> Stashed changes
     model.addAttribute("groups", groups.getContent());
     model.addAttribute("currentPage", groups.getNumber() + 1);
     model.addAttribute("totalPages", groups.getTotalPages());
