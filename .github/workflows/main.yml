@@ -52,7 +52,7 @@ jobs:
         run: mvn test --batch-mode --errors --fail-fast --show-version
 
       - name: Upload JUnit test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: junit-test-reports
           path: target/surefire-reports/*.xml
