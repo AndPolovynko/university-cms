@@ -253,7 +253,7 @@ class UserServiceImplTest {
 
     assertThat(exception.getMessage()).contains("test-id");
   }
-  
+
   @Test
   void getUserResponseByLoginShouldCallMapper() {
     when(mapper.userToUserResponse(any(User.class))).thenReturn(getUserResponse());
@@ -327,7 +327,7 @@ class UserServiceImplTest {
   void getUserResponsesShouldCallMapperIfKeywordIsNull() {
     when(userRepo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<User>(getUsers()));
 
-    service.getUserResponses(null, 1, 0);
+    service.getUserResponses(null, 1, "0");
 
     verify(mapper, atLeastOnce()).userToUserResponse(any());
   }
@@ -336,16 +336,16 @@ class UserServiceImplTest {
   void getUserResponsesShouldCallRepoFindAllIfKeywordIsNull() {
     when(userRepo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<User>(getUsers()));
 
-    service.getUserResponses(null, 1, 0);
+    service.getUserResponses(null, 1, "1");
 
     verify(userRepo, atLeastOnce()).findAll(any(PageRequest.class));
   }
-  
+
   @Test
   void getUserResponsesShouldCallRepoFindAllIfKeywordIsBlank() {
     when(userRepo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<User>(getUsers()));
 
-    service.getUserResponses("", 1, 0);
+    service.getUserResponses("", 1, "-1");
 
     verify(userRepo, atLeastOnce()).findAll(any(PageRequest.class));
   }
@@ -355,7 +355,7 @@ class UserServiceImplTest {
     when(userRepo.findByLoginContainingOrUserDetailsListLastNameContaining(any(), any(), any(PageRequest.class)))
         .thenReturn(new PageImpl<User>(getUsers()));
 
-    service.getUserResponses("keyword", 1, 0);
+    service.getUserResponses("keyword", 1, "0");
 
     verify(mapper, atLeastOnce()).userToUserResponse(any());
   }
@@ -365,24 +365,24 @@ class UserServiceImplTest {
     when(userRepo.findByLoginContainingOrUserDetailsListLastNameContaining(any(), any(), any(PageRequest.class)))
         .thenReturn(new PageImpl<User>(getUsers()));
 
-    service.getUserResponses("keyword", 1, 0);
+    service.getUserResponses("keyword", 1, "0");
 
     verify(userRepo, atLeastOnce()).findByLoginContainingOrUserDetailsListLastNameContaining(any(), any(),
         any(PageRequest.class));
   }
 
   @Test
-  void editLoginInfoFromRequestShouldCallRepository() {
+  void editUserFromRequestShouldCallRepositoryIfEditionTypeIsLofinInfo() {
     when(encoder.encode("password")).thenReturn("password");
     doNothing().when(userRepo).editLoginInfoById(any(), any(), any(), any());
 
-    service.editLoginInfoFromRequest(getUserEditRequest());
+    service.editUserFromRequest("login-info", getUserEditRequest());
 
     verify(userRepo, atLeastOnce()).editLoginInfoById("login", "password", "email", "id");
   }
 
   @Test
-  void editLoginInfoFromRequestShouldCallRepositoryFindByIdIfRequestPasswordIsNull() {
+  void editUserFromRequestShouldCallRepositoryFindByIdIfRequestPasswordIsNullAndEditionTypeIsLofinInfo() {
     User user = getEmptyUser();
     user.setPassword("password");
 
@@ -391,13 +391,13 @@ class UserServiceImplTest {
 
     UserEditRequest request = getUserEditRequest();
     request.setPassword(null);
-    service.editLoginInfoFromRequest(request);
+    service.editUserFromRequest("login-info", request);
 
     verify(userRepo, atLeastOnce()).editLoginInfoById("login", "password", "email", "id");
   }
 
   @Test
-  void editLoginInfoFromRequestShouldThrowEntityNotFoundRuntimeExceptionIfPasswordIsBlankAndUserDoesNotExist() {
+  void editUserFromRequestShouldThrowEntityNotFoundRuntimeExceptionIfPasswordIsBlankAndUserDoesNotExistAndEditionTypeIsLofinInfo() {
     User user = getEmptyUser();
     user.setPassword("password");
 
@@ -408,13 +408,13 @@ class UserServiceImplTest {
     request.setPassword("");
 
     EntityNotFoundRuntimeException exception = assertThrows(EntityNotFoundRuntimeException.class,
-        () -> service.editLoginInfoFromRequest(request));
+        () -> service.editUserFromRequest("login-info", request));
 
     assertThat(exception.getMessage()).contains("test-id");
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldCallUserRepuserRepooFindById() {
+  void editUserFromRequestShouldCallUserRepuserRepooFindByIdIfEditionTypeIsRoles() {
     when(userRepo.findById("id")).thenReturn(Optional.of(getUser()));
     when(roleRepo.findByName("ADMINISTRATOR")).thenReturn(Optional.of(Role.builder().name("ADMINISTRATOR").build()));
     when(roleRepo.findByName("TEACHER")).thenReturn(Optional.of(Role.builder().name("TEACHER").build()));
@@ -422,43 +422,43 @@ class UserServiceImplTest {
     when(groupRepo.findByName("the Hispaniola"))
         .thenReturn(Optional.of(Group.builder().name("the Hispaniola").build()));
 
-    service.editRolesAndDetailsFromRequest(getUserEditRequest());
+    service.editUserFromRequest("roles", getUserEditRequest());
 
     verify(userRepo, atLeastOnce()).findById("id");
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldThrowEntityNotFoundRuntimeExceptionIfUserWithGivenIdDoesNotExist() {
+  void editUserFromRequestShouldThrowEntityNotFoundRuntimeExceptionIfUserWithGivenIdDoesNotExistAmdEditionTypeIsRoles() {
     when(userRepo.findById("test-id")).thenReturn(Optional.empty());
 
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setId("test-id");
     EntityNotFoundRuntimeException exception = assertThrows(EntityNotFoundRuntimeException.class,
-        () -> service.editRolesAndDetailsFromRequest(editRequest));
+        () -> service.editUserFromRequest("roles", editRequest));
 
     assertThat(exception.getMessage()).contains("test-id");
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldThrowInvalidUserConfigurationExceptionIfUserRequestRolesListIsNull() {
+  void editUserFromRequestShouldThrowInvalidUserConfigurationExceptionIfUserRequestRolesListIsNullAmdEditionTypeIsRoles() {
     when(userRepo.findById("id")).thenReturn(Optional.of(getEmptyUser()));
 
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setRoles(null);
-    assertThrows(InvalidUserConfigurationException.class, () -> service.editRolesAndDetailsFromRequest(editRequest));
+    assertThrows(InvalidUserConfigurationException.class, () -> service.editUserFromRequest("roles", editRequest));
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldThrowInvalidUserConfigurationExceptionIfUserRequestRolesListIsEmpty() {
+  void editUserFromRequestShouldThrowInvalidUserConfigurationExceptionIfUserRequestRolesListIsEmptyAmdEditionTypeIsRoles() {
     when(userRepo.findById("id")).thenReturn(Optional.of(getEmptyUser()));
 
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setRoles(new ArrayList<String>());
-    assertThrows(InvalidUserConfigurationException.class, () -> service.editRolesAndDetailsFromRequest(editRequest));
+    assertThrows(InvalidUserConfigurationException.class, () -> service.editUserFromRequest("roles", editRequest));
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldCallRoleRepoFindByName() {
+  void editUserFromRequestShouldCallRoleRepoFindByNameIfEditionTypeIsRoles() {
     when(userRepo.findById("id")).thenReturn(Optional.of(getUser()));
     when(roleRepo.findByName("ADMINISTRATOR")).thenReturn(Optional.of(Role.builder().name("ADMINISTRATOR").build()));
     when(roleRepo.findByName("TEACHER")).thenReturn(Optional.of(Role.builder().name("TEACHER").build()));
@@ -466,7 +466,7 @@ class UserServiceImplTest {
     when(groupRepo.findByName("the Hispaniola"))
         .thenReturn(Optional.of(Group.builder().name("the Hispaniola").build()));
 
-    service.editRolesAndDetailsFromRequest(getUserEditRequest());
+    service.editUserFromRequest("roles", getUserEditRequest());
 
     verify(roleRepo, atLeastOnce()).findByName("ADMINISTRATOR");
     verify(roleRepo, atLeastOnce()).findByName("TEACHER");
@@ -474,20 +474,20 @@ class UserServiceImplTest {
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldThrowEntityNotFoundRuntimeExceptionIfRoleWithAnyOfGivenNamesDoesNotExist() {
+  void editUserFromRequestShouldThrowEntityNotFoundRuntimeExceptionIfRoleWithAnyOfGivenNamesDoesNotExistAndEditionTypeIsRoles() {
     when(userRepo.findById("id")).thenReturn(Optional.of(getUser()));
     when(roleRepo.findByName("test-role-name")).thenReturn(Optional.empty());
 
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setRoles(List.of("test-role-name"));
     EntityNotFoundRuntimeException exception = assertThrows(EntityNotFoundRuntimeException.class,
-        () -> service.editRolesAndDetailsFromRequest(editRequest));
+        () -> service.editUserFromRequest("roles", editRequest));
 
     assertThat(exception.getMessage()).contains("test-role-name");
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldCreateUserDetailsListIfItIsNull() {
+  void editUserFromRequestShouldCreateUserDetailsListIfItIsNullAndEditionTypeIsDetails() {
     User user = getUser();
     user.setUserDetailsList(null);
     when(userRepo.findById("id")).thenReturn(Optional.of(user));
@@ -497,14 +497,14 @@ class UserServiceImplTest {
     when(groupRepo.findByName("the Hispaniola"))
         .thenReturn(Optional.of(Group.builder().name("the Hispaniola").build()));
 
-    service.editRolesAndDetailsFromRequest(getUserEditRequest());
+    service.editUserFromRequest("details", getUserEditRequest());
 
     verify(userRepo).save(userCaptor.capture());
     assertThat(userCaptor.getValue().getUserDetailsList().isEmpty());
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldThrowEntityNotFoundRuntimeExceptionIfGroupWithGivenNameDoesNotExist() {
+  void editUserFromRequestShouldThrowEntityNotFoundRuntimeExceptionIfGroupWithGivenNameDoesNotExistAndEditionTypeIsDetails() {
     when(userRepo.findById("id")).thenReturn(Optional.of(getUser()));
     when(roleRepo.findByName("ADMINISTRATOR")).thenReturn(Optional.of(Role.builder().name("ADMINISTRATOR").build()));
     when(roleRepo.findByName("TEACHER")).thenReturn(Optional.of(Role.builder().name("TEACHER").build()));
@@ -514,13 +514,13 @@ class UserServiceImplTest {
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setGroupName("test-group-name");
     EntityNotFoundRuntimeException exception = assertThrows(EntityNotFoundRuntimeException.class,
-        () -> service.editRolesAndDetailsFromRequest(editRequest));
+        () -> service.editUserFromRequest("details", editRequest));
 
     assertThat(exception.getMessage()).contains("test-group-name");
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldReturnUserWithNullInGroupFieldIfGroupNameIsBlank() {
+  void editUserFromRequestShouldReturnUserWithNullInGroupFieldIfGroupNameIsBlankAndEditionTypeIsDetails() {
     when(userRepo.findById("id")).thenReturn(Optional.of(getUser()));
     doNothing().when(detailsRepo).delete(any());
     when(roleRepo.findByName("STUDENT")).thenReturn(Optional.of(Role.builder().name("STUDENT").build()));
@@ -528,7 +528,7 @@ class UserServiceImplTest {
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setRoles(List.of("STUDENT"));
     editRequest.setGroupName("");
-    service.editRolesAndDetailsFromRequest(editRequest);
+    service.editUserFromRequest("details", editRequest);
 
     verify(userRepo).save(userCaptor.capture());
     StudentDetails studentDetails = (StudentDetails) userCaptor.getValue().getUserDetailsList().get(0);
@@ -536,7 +536,7 @@ class UserServiceImplTest {
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldReturnUserWithNullInGroupFieldIfGroupNameIsNull() {
+  void editUserFromRequestShouldReturnUserWithNullInGroupFieldIfGroupNameIsNullAndEditionTypeIsDetails() {
     User user = getUser();
     user.setUserDetailsList(null);
     when(userRepo.findById("id")).thenReturn(Optional.of(user));
@@ -546,21 +546,21 @@ class UserServiceImplTest {
 
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setGroupName(null);
-    service.editRolesAndDetailsFromRequest(editRequest);
+    service.editUserFromRequest("details", editRequest);
 
     verify(userRepo).save(userCaptor.capture());
     assertThat(userCaptor.getValue().getUserDetailsList()).isNotEmpty();
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldCreateDetailsIfUserHasLessRoles() {
+  void editUserFromRequestShouldCreateDetailsIfUserHasLessRolesAndEditionTypeIsDetails() {
     User user = getUser();
     when(userRepo.findById("id")).thenReturn(Optional.of(user));
     when(roleRepo.findByName("TEACHER")).thenReturn(Optional.of(Role.builder().name("TEACHER").build()));
 
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setRoles(List.of("TEACHER"));
-    service.editRolesAndDetailsFromRequest(editRequest);
+    service.editUserFromRequest("details", editRequest);
 
     verify(userRepo).save(userCaptor.capture());
     assertThat(userCaptor.getValue().getUserDetailsList()).isEqualTo(List.of(TeacherDetails.builder()
@@ -569,7 +569,7 @@ class UserServiceImplTest {
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldCreateDetailsIfUserHasNewRoles() {
+  void editUserFromRequestShouldCreateDetailsIfUserHasNewRolesAndEditionTypeIsDetails() {
     User user = getUser();
     user.setUserDetailsList(null);
     when(userRepo.findById("id")).thenReturn(Optional.of(user));
@@ -580,14 +580,14 @@ class UserServiceImplTest {
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setGroupName("");
     editRequest.setJobTitle("");
-    service.editRolesAndDetailsFromRequest(editRequest);
+    service.editUserFromRequest("details", editRequest);
 
     verify(userRepo).save(userCaptor.capture());
     assertThat(userCaptor.getValue().getUserDetailsList()).isNotEmpty();
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldCreateDetailsIfUserHasNewRolesAndRequestGroupNameIsNull() {
+  void editUserFromRequestShouldCreateDetailsIfUserHasNewRolesAndRequestGroupNameIsNullAndEditionTypeIsDetails() {
     User user = getUser();
     when(userRepo.findById("id")).thenReturn(Optional.of(user));
     when(roleRepo.findByName("ADMINISTRATOR")).thenReturn(Optional.of(Role.builder().name("ADMINISTRATOR").build()));
@@ -597,14 +597,14 @@ class UserServiceImplTest {
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setGroupName(null);
     editRequest.setJobTitle("");
-    service.editRolesAndDetailsFromRequest(editRequest);
+    service.editUserFromRequest("details", editRequest);
 
     verify(userRepo).save(userCaptor.capture());
     assertThat(userCaptor.getValue().getUserDetailsList()).isNotEmpty();
   }
 
   @Test
-  void editRolesAndDetailsFromRequestShouldThrowEntityNotFoundRuntimeExceptionDuringDetailsCreationIfGroupWithGivenNameDoesNotExist() {
+  void editUserFromRequestShouldThrowEntityNotFoundRuntimeExceptionDuringDetailsCreationIfGroupWithGivenNameDoesNotExistAndEditionTypeIsDetails() {
     User user = getUser();
     user.setUserDetailsList(null);
     when(userRepo.findById("id")).thenReturn(Optional.of(user));
@@ -616,7 +616,7 @@ class UserServiceImplTest {
     UserEditRequest editRequest = getUserEditRequest();
     editRequest.setGroupName("test-group-name");
     EntityNotFoundRuntimeException exception = assertThrows(EntityNotFoundRuntimeException.class,
-        () -> service.editRolesAndDetailsFromRequest(editRequest));
+        () -> service.editUserFromRequest("details", editRequest));
 
     assertThat(exception.getMessage()).contains("test-group-name");
   }

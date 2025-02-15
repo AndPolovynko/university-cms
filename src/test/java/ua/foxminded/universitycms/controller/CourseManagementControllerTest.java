@@ -54,14 +54,14 @@ class CourseManagementControllerTest {
         CourseResponse.builder().id("1").name("Course 1").build(),
         CourseResponse.builder().id("2").name("Course 2").build());
 
-    when(service.getCourseResponses(keyword, fastSearchLimit, 0)).thenReturn(new PageImpl<>(expectedResponses));
+    when(service.getCourseResponses(keyword, fastSearchLimit, "0")).thenReturn(new PageImpl<>(expectedResponses));
 
     mockMvc.perform(get("/admin/courses/search")
         .param("keyword", keyword).param("fastSearchLimit", String.valueOf(fastSearchLimit)))
         .andExpect(status().isOk())
         .andExpect(content().json("[{\"id\":\"1\",\"name\":\"Course 1\"},{\"id\":\"2\",\"name\":\"Course 2\"}]"));
 
-    verify(service).getCourseResponses(keyword, fastSearchLimit, 0);
+    verify(service).getCourseResponses(keyword, fastSearchLimit, "0");
   }
   
   @Test
@@ -74,43 +74,43 @@ class CourseManagementControllerTest {
 
   @Test
   void getCoursesShouldCallServiceMethodWithExpectedArguments() throws Exception {
-    when(service.getCourseResponses("keyword", 5, 0)).thenReturn(new PageImpl<CourseResponse>(getResponses()));
+    when(service.getCourseResponses("keyword", 5, "1")).thenReturn(new PageImpl<CourseResponse>(getResponses()));
     mockMvc.perform(get("/admin/courses?keyword=keyword&pageNumber=1")).andExpect(status().isOk());
 
-    verify(service, atLeastOnce()).getCourseResponses("keyword", 5, 0);
+    verify(service, atLeastOnce()).getCourseResponses("keyword", 5, "1");
   }
 
   @Test
   void getCoursesShouldDefaultToPageOneWhenPageNumberIsString() throws Exception {
-      when(service.getCourseResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getCourseResponses("keyword", 5, "invalid")).thenReturn(new PageImpl<>(getResponses()));
       mockMvc.perform(get("/admin/courses?keyword=keyword&pageNumber=invalid"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
-      verify(service, atLeastOnce()).getCourseResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getCourseResponses("keyword", 5, "invalid");
   }
 
   @Test
   void getCoursesShouldDefaultToPageOneWhenPageNumberIsNegative() throws Exception {
-      when(service.getCourseResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getCourseResponses("keyword", 5, "-1")).thenReturn(new PageImpl<>(getResponses()));
       mockMvc.perform(get("/admin/courses?keyword=keyword&pageNumber=-1"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
-      verify(service, atLeastOnce()).getCourseResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getCourseResponses("keyword", 5, "-1");
   }
 
   @Test
   void getCoursesShouldDefaultToPageOneWhenPageNumberIsZero() throws Exception {
-      when(service.getCourseResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getCourseResponses("keyword", 5, "0")).thenReturn(new PageImpl<>(getResponses()));
       mockMvc.perform(get("/admin/courses?keyword=keyword&pageNumber=0"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
-      verify(service, atLeastOnce()).getCourseResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getCourseResponses("keyword", 5, "0");
   }
   
   @Test
   void getCoursesShouldAddExpectedAttributesToModel() throws Exception {
     Page<CourseResponse> pages = new PageImpl<>(getResponses());
-    when(service.getCourseResponses("keyword", 5, 0)).thenReturn(pages);
+    when(service.getCourseResponses("keyword", 5, "1")).thenReturn(pages);
     
     mockMvc.perform(get("/admin/courses?keyword=keyword&pageNumber=1"))
       .andExpect(status().isOk())

@@ -16,7 +16,7 @@ public interface CourseService {
   
   CourseEditRequest getCourseEditRequestById(String id);
   
-  Page<CourseResponse> getCourseResponses(String keyword, Integer itemsPerPage, Integer pageNumber);
+  Page<CourseResponse> getCourseResponses(String keyword, Integer itemsPerPage, String pageNumber);
   
   void editFromRequest(CourseEditRequest request);
 

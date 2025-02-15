@@ -16,7 +16,7 @@ public interface GroupService {
   
   GroupEditRequest getGroupEditRequestById(String id);
   
-  Page<GroupResponse> getGroupResponses(String keyword, Integer itemsPerPage, Integer pageNumber);
+  Page<GroupResponse> getGroupResponses(String keyword, Integer itemsPerPage, String pageNumber);
   
   void editFromRequest(GroupEditRequest request);
 

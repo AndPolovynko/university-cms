@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import ua.foxminded.universitycms.controller.EditionType;
 import ua.foxminded.universitycms.domain.Role;
 import ua.foxminded.universitycms.domain.User;
 import ua.foxminded.universitycms.domain.userdetails.AdminDetails;
@@ -32,6 +33,7 @@ import ua.foxminded.universitycms.repository.UserRepository;
 import ua.foxminded.universitycms.service.UserService;
 import ua.foxminded.universitycms.service.exception.EntityNotFoundRuntimeException;
 import ua.foxminded.universitycms.service.exception.InvalidUserConfigurationException;
+import ua.foxminded.universitycms.service.util.PageNumberParser;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
@@ -70,7 +72,7 @@ public class UserServiceImpl implements UserService {
         () -> new EntityNotFoundRuntimeException("Entity with id=" + id + " doesn't exist.")));
     return response;
   }
-  
+
   @Override
   @Transactional(readOnly = true)
   public UserResponse getUserResponseByLogin(String login) {
@@ -78,7 +80,7 @@ public class UserServiceImpl implements UserService {
         () -> new EntityNotFoundRuntimeException("User with login=" + login + " doesn't exist.")));
     return response;
   }
-  
+
   @Override
   @Transactional(readOnly = true)
   public User findByLogin(String login) {
@@ -96,19 +98,32 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<UserResponse> getUserResponses(String keyword, Integer itemsPerPage, Integer pageNumber) {
+  public Page<UserResponse> getUserResponses(String keyword, Integer itemsPerPage, String pageNumber) {
     if (keyword == null || keyword.isBlank()) {
-      return userRepo.findAll(PageRequest.of(pageNumber, itemsPerPage, Sort.by("login")))
+      return userRepo.findAll(PageRequest.of(PageNumberParser.parse(pageNumber), itemsPerPage, Sort.by("login")))
           .map(mapper::userToUserResponse);
     } else {
       return userRepo.findByLoginContainingOrUserDetailsListLastNameContaining(keyword, keyword,
-          PageRequest.of(pageNumber, itemsPerPage, Sort.by("login"))).map(mapper::userToUserResponse);
+          PageRequest.of(PageNumberParser.parse(pageNumber), itemsPerPage, Sort.by("login")))
+          .map(mapper::userToUserResponse);
     }
   }
 
   @Override
   @Transactional
-  public void editLoginInfoFromRequest(UserEditRequest request) {
+  public void editUserFromRequest(String requestedEditionType, UserEditRequest request) {
+    EditionType editionType = EditionType.fromString(requestedEditionType);
+
+    if (editionType == EditionType.LOGIN_INFO) {
+      editLoginInfoFromRequest(request);
+    } else if (editionType == EditionType.ROLES) {
+      editRolesAndDetailsFromRequest(request);
+    } else {
+      editRolesAndDetailsFromRequest(request);
+    }
+  }
+
+  private void editLoginInfoFromRequest(UserEditRequest request) {
     String password;
     if (request.getPassword() == null || request.getPassword().isBlank()) {
       password = userRepo.findById(request.getId()).orElseThrow(
@@ -121,9 +136,7 @@ public class UserServiceImpl implements UserService {
     userRepo.editLoginInfoById(request.getLogin(), password, request.getEmail(), request.getId());
   }
 
-  @Override
-  @Transactional
-  public void editRolesAndDetailsFromRequest(UserEditRequest request) {
+  private void editRolesAndDetailsFromRequest(UserEditRequest request) {
     User user = userRepo.findById(request.getId()).orElseThrow(
         () -> new EntityNotFoundRuntimeException("User with id = " + request.getId() + " doesn't exist."));
 

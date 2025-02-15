@@ -54,14 +54,14 @@ public class ClassVenueManagementControllerTest {
         UniversityClassVenueResponse.builder().id("1").name("Main Hall").build(),
         UniversityClassVenueResponse.builder().id("2").name("Science Hall").build());
 
-    when(service.getClassVenueResponses(keyword, fastSearchLimit, 0)).thenReturn(new PageImpl<>(expectedResponses));
+    when(service.getClassVenueResponses(keyword, fastSearchLimit, "0")).thenReturn(new PageImpl<>(expectedResponses));
 
     mockMvc.perform(get("/admin/classes/venues/search")
         .param("keyword", keyword).param("fastSearchLimit", String.valueOf(fastSearchLimit)))
         .andExpect(status().isOk())
         .andExpect(content().json("[{\"id\":\"1\",\"name\":\"Main Hall\"},{\"id\":\"2\",\"name\":\"Science Hall\"}]"));
 
-    verify(service).getClassVenueResponses(keyword, fastSearchLimit, 0);
+    verify(service).getClassVenueResponses(keyword, fastSearchLimit, "0");
   }
 
   @Test
@@ -75,44 +75,44 @@ public class ClassVenueManagementControllerTest {
 
   @Test
   void getVenuesShouldCallServiceMethodWithExpectedArguments() throws Exception {
-    when(service.getClassVenueResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+    when(service.getClassVenueResponses("keyword", 5, "1")).thenReturn(new PageImpl<>(getResponses()));
     mockMvc.perform(get("/admin/classes/venues?keyword=keyword&pageNumber=1"))
         .andExpect(status().isOk());
 
-    verify(service, atLeastOnce()).getClassVenueResponses("keyword", 5, 0);
+    verify(service, atLeastOnce()).getClassVenueResponses("keyword", 5, "1");
   }
 
   @Test
   void getVenuesShouldDefaultToPageOneWhenPageNumberIsString() throws Exception {
-      when(service.getClassVenueResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getClassVenueResponses("keyword", 5, "invalid")).thenReturn(new PageImpl<>(getResponses()));
       mockMvc.perform(get("/admin/classes/venues?keyword=keyword&pageNumber=invalid"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
-      verify(service, atLeastOnce()).getClassVenueResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getClassVenueResponses("keyword", 5, "invalid");
   }
 
   @Test
   void getVenuesShouldDefaultToPageOneWhenPageNumberIsNegative() throws Exception {
-      when(service.getClassVenueResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getClassVenueResponses("keyword", 5, "-1")).thenReturn(new PageImpl<>(getResponses()));
       mockMvc.perform(get("/admin/classes/venues?keyword=keyword&pageNumber=-1"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
-      verify(service, atLeastOnce()).getClassVenueResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getClassVenueResponses("keyword", 5, "-1");
   }
 
   @Test
   void getVenuesShouldDefaultToPageOneWhenPageNumberIsZero() throws Exception {
-      when(service.getClassVenueResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getClassVenueResponses("keyword", 5, "0")).thenReturn(new PageImpl<>(getResponses()));
       mockMvc.perform(get("/admin/classes/venues?keyword=keyword&pageNumber=0"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
-      verify(service, atLeastOnce()).getClassVenueResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getClassVenueResponses("keyword", 5, "0");
   }
 
   @Test
   void getVenuesShouldAddExpectedAttributesToModel() throws Exception {
     Page<UniversityClassVenueResponse> pages = new PageImpl<>(getResponses());
-    when(service.getClassVenueResponses("keyword", 5, 0)).thenReturn(pages);
+    when(service.getClassVenueResponses("keyword", 5, "1")).thenReturn(pages);
 
     mockMvc.perform(get("/admin/classes/venues?keyword=keyword&pageNumber=1"))
         .andExpect(status().isOk())

@@ -20,11 +20,9 @@ public interface UserService {
 
   User findByLogin(String login);
   
-  Page<UserResponse> getUserResponses(String keyword, Integer itemsPerPage, Integer pageNumber);
+  Page<UserResponse> getUserResponses(String keyword, Integer itemsPerPage, String pageNumber);
   
-  void editLoginInfoFromRequest(UserEditRequest request);
-  
-  void editRolesAndDetailsFromRequest(UserEditRequest request);
+  void editUserFromRequest(String requestedEditionType, UserEditRequest request);
 
   void deleteById(String id);
 }

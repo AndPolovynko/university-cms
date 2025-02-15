@@ -1,7 +1,5 @@
 package ua.foxminded.universitycms.controller.universityclass;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -31,18 +29,11 @@ import ua.foxminded.universitycms.service.UniversityClassTypeService;
 public class ClassManagementController {
   private final UniversityClassService service;
   private final UniversityClassTypeService typeService;
-  
+
   @GetMapping
   public String getUniversityClasses(Model model, @RequestParam(defaultValue = "") String keyword,
       @RequestParam(defaultValue = "1") String pageNumber, @Value("${classesPerPage}") Integer pageSize) {
-    
-    Integer pageNumberInt = Optional.of(pageNumber)
-        .filter(param -> param.matches("\\d+"))
-        .map(Integer::parseInt)
-        .filter(num -> num > 0)
-        .orElse(1);
-    
-    Page<UniversityClassResponse> classes = service.getUniversityClassResponses(keyword, pageSize, pageNumberInt - 1);
+    Page<UniversityClassResponse> classes = service.getUniversityClassResponses(keyword, pageSize, pageNumber);
     model.addAttribute("classes", classes.getContent());
     model.addAttribute("currentPage", classes.getNumber() + 1);
     model.addAttribute("totalPages", classes.getTotalPages());
@@ -87,5 +78,12 @@ public class ClassManagementController {
   @PostMapping("/create")
   public String createUniversityClass(@ModelAttribute("class") UniversityClassCreateRequest request) {
     return "redirect:/admin/classes/" + service.saveFromRequest(request).getId();
+  }
+  
+  @PostMapping("/create/batch")
+  public String createUniversityClasses(@ModelAttribute("class") UniversityClassCreateRequest request,
+      @RequestParam String repeat, @RequestParam String repeatUntil) {
+    service.saveFromRequest(request, repeat, repeatUntil);
+    return "redirect:/admin/classes";
   }
 }

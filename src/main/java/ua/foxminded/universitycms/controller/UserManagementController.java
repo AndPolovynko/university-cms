@@ -1,7 +1,6 @@
 package ua.foxminded.universitycms.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,12 +39,13 @@ public class UserManagementController {
   @ResponseBody
   public List<UserResponse> searchUsers(@RequestParam(defaultValue = "") String keyword,
       @Value("${fastSearchLimit}") Integer fastSearchLimit) {
-    return userService.getUserResponses(keyword, fastSearchLimit, 0).toList();
+    return userService.getUserResponses(keyword, fastSearchLimit, "0").toList();
   }
 
   @GetMapping
   public String getUsers(Model model, @RequestParam(defaultValue = "") String keyword,
       @RequestParam(defaultValue = "1") String pageNumber, @Value("${usersPerPage}") Integer pageSize) {
+<<<<<<< Updated upstream
 
     Integer pageNumberInt = Optional.of(pageNumber)
         .filter(param -> param.matches("\\d+"))
@@ -54,6 +54,9 @@ public class UserManagementController {
         .orElse(1);
 
     Page<UserResponse> users = userService.getUserResponses(keyword, pageSize, pageNumberInt - 1);
+=======
+    Page<UserResponse> users = userService.getUserResponses(keyword, pageSize, pageNumber);
+>>>>>>> Stashed changes
     model.addAttribute("users", users.getContent());
     model.addAttribute("currentPage", users.getNumber() + 1);
     model.addAttribute("totalPages", users.getTotalPages());
@@ -84,18 +87,7 @@ public class UserManagementController {
   @PutMapping("/edit/{type}/{id}")
   public String updateUser(@ModelAttribute("user") UserEditRequest request,
       @PathVariable("type") String requestedEditionType) {
-
-    EditionType editionType = EditionType.fromString(requestedEditionType);
-
-    if (editionType == EditionType.LOGIN_INFO) {
-      userService.editLoginInfoFromRequest(request);
-    } else if (editionType == EditionType.ROLES) {
-      userService.editRolesAndDetailsFromRequest(request);
-      return "redirect:/admin/users/edit/" + request.getId();
-    } else {
-      userService.editRolesAndDetailsFromRequest(request);
-    }
-
+    userService.editUserFromRequest(requestedEditionType, request);
     return "redirect:/admin/users/" + request.getId();
   }
 

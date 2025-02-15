@@ -1,7 +1,6 @@
 package ua.foxminded.universitycms.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,12 +35,13 @@ public class GroupManagementController {
   @ResponseBody
   public List<GroupResponse> searchGroups(@RequestParam(defaultValue = "") String keyword,
       @Value("${fastSearchLimit}") Integer fastSearchLimit) {
-    return service.getGroupResponses(keyword, fastSearchLimit, 0).toList();
+    return service.getGroupResponses(keyword, fastSearchLimit, "0").toList();
   }
 
   @GetMapping
   public String getGroups(Model model, @RequestParam(defaultValue = "") String keyword,
       @RequestParam(defaultValue = "1") String pageNumber, @Value("${groupsPerPage}") Integer pageSize) {
+<<<<<<< Updated upstream
 
     Integer pageNumberInt = Optional.of(pageNumber)
         .filter(param -> param.matches("\\d+"))
@@ -51,6 +51,9 @@ public class GroupManagementController {
 
     Page<GroupResponse> groups = service.getGroupResponses(keyword, pageSize, pageNumberInt - 1);
 
+=======
+    Page<GroupResponse> groups = service.getGroupResponses(keyword, pageSize, pageNumber);
+>>>>>>> Stashed changes
     model.addAttribute("groups", groups.getContent());
     model.addAttribute("currentPage", groups.getNumber() + 1);
     model.addAttribute("totalPages", groups.getTotalPages());

@@ -133,7 +133,7 @@ class GroupServiceImplTest {
   void getGroupResponsesShouldCallMapperIfKeywordIsNull() {
     when(repo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<Group>(getEntities()));
 
-    service.getGroupResponses(null, 1, 0);
+    service.getGroupResponses(null, 1, "0");
 
     verify(mapper, atLeastOnce()).groupToGroupResponse(any());
   }
@@ -142,7 +142,7 @@ class GroupServiceImplTest {
   void getGroupResponsesShouldCallRepoFindAllIfKeywordIsNull() {
     when(repo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<Group>(getEntities()));
 
-    service.getGroupResponses(null, 1, 0);
+    service.getGroupResponses(null, 1, "1");
 
     verify(repo, atLeastOnce()).findAll(any(PageRequest.class));
   }
@@ -151,7 +151,7 @@ class GroupServiceImplTest {
   void getGroupResponsesShouldCallRepoFindAllIfKeywordIsBlank() {
     when(repo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<Group>(getEntities()));
 
-    service.getGroupResponses("", 1, 0);
+    service.getGroupResponses("", 1, "-1");
 
     verify(repo, atLeastOnce()).findAll(any(PageRequest.class));
   }
@@ -161,7 +161,7 @@ class GroupServiceImplTest {
     when(repo.findByNameContaining(any(), any(PageRequest.class)))
         .thenReturn(new PageImpl<Group>(getEntities()));
 
-    service.getGroupResponses("keyword", 1, 0);
+    service.getGroupResponses("keyword", 1, "0");
 
     verify(mapper, atLeastOnce()).groupToGroupResponse(any());
   }
@@ -171,7 +171,7 @@ class GroupServiceImplTest {
     when(repo.findByNameContaining(any(), any(PageRequest.class)))
         .thenReturn(new PageImpl<Group>(getEntities()));
 
-    service.getGroupResponses("keyword", 1, 0);
+    service.getGroupResponses("keyword", 1, "0");
 
     verify(repo, atLeastOnce()).findByNameContaining(any(), any(PageRequest.class));
   }

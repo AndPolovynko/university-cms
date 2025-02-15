@@ -16,6 +16,7 @@ import ua.foxminded.universitycms.mapper.GroupMapper;
 import ua.foxminded.universitycms.repository.GroupRepository;
 import ua.foxminded.universitycms.service.GroupService;
 import ua.foxminded.universitycms.service.exception.EntityNotFoundRuntimeException;
+import ua.foxminded.universitycms.service.util.PageNumberParser;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
@@ -52,12 +53,14 @@ public class GroupServiceImpl implements GroupService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<GroupResponse> getGroupResponses(String keyword, Integer itemsPerPage, Integer pageNumber) {
+  public Page<GroupResponse> getGroupResponses(String keyword, Integer itemsPerPage, String pageNumber) {
     if (keyword == null || keyword.isBlank()) {
-      return repo.findAll(PageRequest.of(pageNumber, itemsPerPage, Sort.by("name")))
+      return repo.findAll(PageRequest.of(PageNumberParser.parse(pageNumber), itemsPerPage, Sort.by("name")))
           .map(mapper::groupToGroupResponse);
     } else {
-      return repo.findByNameContaining(keyword, PageRequest.of(pageNumber, itemsPerPage, Sort.by("name")))
+      return repo
+          .findByNameContaining(keyword,
+              PageRequest.of(PageNumberParser.parse(pageNumber), itemsPerPage, Sort.by("name")))
           .map(mapper::groupToGroupResponse);
     }
   }

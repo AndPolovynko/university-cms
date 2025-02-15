@@ -16,7 +16,7 @@ public interface UniversityClassVenueService {
 
   UniversityClassVenueEditRequest getClassVenueEditRequestById(String id);
 
-  Page<UniversityClassVenueResponse> getClassVenueResponses(String keyword, Integer itemsPerPage, Integer pageNumber);
+  Page<UniversityClassVenueResponse> getClassVenueResponses(String keyword, Integer itemsPerPage, String pageNumber);
 
   void editFromRequest(UniversityClassVenueEditRequest request);
 
