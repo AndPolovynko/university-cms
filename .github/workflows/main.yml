@@ -33,14 +33,6 @@ jobs:
       - name: Compile the project
         run: mvn clean compile --batch-mode --errors --fail-fast --show-version
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/*.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
       - name: Save build artifacts
         if: success()
         run: mv target/*.jar .
