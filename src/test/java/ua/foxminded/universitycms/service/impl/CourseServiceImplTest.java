@@ -136,7 +136,7 @@ class CourseServiceImplTest {
   void getCourseResponsesShouldCallMapperIfKeywordIsNull() {
     when(repo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<Course>(getEntities()));
 
-    service.getCourseResponses(null, 1, 0);
+    service.getCourseResponses(null, 1, "0");
 
     verify(mapper, atLeastOnce()).courseToCourseResponse(any());
   }
@@ -145,7 +145,7 @@ class CourseServiceImplTest {
   void getCourseResponsesShouldCallRepoFindAllIfKeywordIsNull() {
     when(repo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<Course>(getEntities()));
 
-    service.getCourseResponses(null, 1, 0);
+    service.getCourseResponses(null, 1, "1");
 
     verify(repo, atLeastOnce()).findAll(any(PageRequest.class));
   }
@@ -154,7 +154,7 @@ class CourseServiceImplTest {
   void getCourseResponsesShouldCallRepoFindAllIfKeywordIsBlank() {
     when(repo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<Course>(getEntities()));
 
-    service.getCourseResponses("", 1, 0);
+    service.getCourseResponses("", 1, "-1");
 
     verify(repo, atLeastOnce()).findAll(any(PageRequest.class));
   }
@@ -164,7 +164,7 @@ class CourseServiceImplTest {
     when(repo.findByNameContainingOrDescriptionContaining(any(), any(), any(PageRequest.class)))
         .thenReturn(new PageImpl<Course>(getEntities()));
 
-    service.getCourseResponses("keyword", 1, 0);
+    service.getCourseResponses("keyword", 1, "0");
 
     verify(mapper, atLeastOnce()).courseToCourseResponse(any());
   }
@@ -174,7 +174,7 @@ class CourseServiceImplTest {
     when(repo.findByNameContainingOrDescriptionContaining(any(), any(), any(PageRequest.class)))
         .thenReturn(new PageImpl<Course>(getEntities()));
 
-    service.getCourseResponses("keyword", 1, 0);
+    service.getCourseResponses("keyword", 1, "0");
 
     verify(repo, atLeastOnce()).findByNameContainingOrDescriptionContaining(any(), any(), any(PageRequest.class));
   }

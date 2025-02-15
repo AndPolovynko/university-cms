@@ -27,7 +27,7 @@ import ua.foxminded.universitycms.repository.config.IDGenerator;
 @Table(name = "university_classes")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Data
 public class UniversityClass implements Identifiable<String> {
   @Id

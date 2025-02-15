@@ -1,7 +1,6 @@
 package ua.foxminded.universitycms.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,20 +35,13 @@ public class CourseManagementController {
   @ResponseBody
   public List<CourseResponse> searchCourses(@RequestParam(defaultValue = "") String keyword,
       @Value("${fastSearchLimit}") Integer fastSearchLimit) {
-    return service.getCourseResponses(keyword, fastSearchLimit, 0).toList();
+    return service.getCourseResponses(keyword, fastSearchLimit, "0").toList();
   }
   
   @GetMapping
   public String getCourses(Model model, @RequestParam(defaultValue = "") String keyword,
       @RequestParam(defaultValue = "1") String pageNumber, @Value("${coursesPerPage}") Integer pageSize) {
-    
-    Integer pageNumberInt = Optional.of(pageNumber)
-        .filter(param -> param.matches("\\d+"))
-        .map(Integer::parseInt)
-        .filter(num -> num > 0)
-        .orElse(1);
-    
-    Page<CourseResponse> courses = service.getCourseResponses(keyword, pageSize, pageNumberInt - 1);
+    Page<CourseResponse> courses = service.getCourseResponses(keyword, pageSize, pageNumber);
     model.addAttribute("courses", courses.getContent());
     model.addAttribute("currentPage", courses.getNumber() + 1);
     model.addAttribute("totalPages", courses.getTotalPages());

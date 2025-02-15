@@ -58,47 +58,47 @@ public class ClassManagementControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("<title>Classes</title>")));
   }
-  
+
   @Test
   void getUniversityClassesShouldDefaultToPageOneWhenPageNumberIsString() throws Exception {
-      Page<UniversityClassResponse> pages = new PageImpl<>(getUniversityClassResponses());
-      when(service.getUniversityClassResponses("keyword", 5, 0)).thenReturn(pages);
+    Page<UniversityClassResponse> pages = new PageImpl<>(getUniversityClassResponses());
+    when(service.getUniversityClassResponses("keyword", 5, "invalid")).thenReturn(pages);
 
-      mockMvc.perform(get("/admin/classes?keyword=keyword&pageNumber=invalid"))
-          .andExpect(status().isOk())
-          .andExpect(model().attribute("currentPage", 1));
+    mockMvc.perform(get("/admin/classes?keyword=keyword&pageNumber=invalid"))
+        .andExpect(status().isOk())
+        .andExpect(model().attribute("currentPage", 1));
 
-      verify(service, atLeastOnce()).getUniversityClassResponses("keyword", 5, 0);
+    verify(service, atLeastOnce()).getUniversityClassResponses("keyword", 5, "invalid");
   }
 
   @Test
   void getUniversityClassesShouldDefaultToPageOneWhenPageNumberIsNegative() throws Exception {
-      Page<UniversityClassResponse> pages = new PageImpl<>(getUniversityClassResponses());
-      when(service.getUniversityClassResponses("keyword", 5, 0)).thenReturn(pages);
+    Page<UniversityClassResponse> pages = new PageImpl<>(getUniversityClassResponses());
+    when(service.getUniversityClassResponses("keyword", 5, "-1")).thenReturn(pages);
 
-      mockMvc.perform(get("/admin/classes?keyword=keyword&pageNumber=-1"))
-          .andExpect(status().isOk())
-          .andExpect(model().attribute("currentPage", 1));
+    mockMvc.perform(get("/admin/classes?keyword=keyword&pageNumber=-1"))
+        .andExpect(status().isOk())
+        .andExpect(model().attribute("currentPage", 1));
 
-      verify(service, atLeastOnce()).getUniversityClassResponses("keyword", 5, 0);
+    verify(service, atLeastOnce()).getUniversityClassResponses("keyword", 5, "-1");
   }
 
   @Test
   void getUniversityClassesShouldDefaultToPageOneWhenPageNumberIsZero() throws Exception {
-      Page<UniversityClassResponse> pages = new PageImpl<>(getUniversityClassResponses());
-      when(service.getUniversityClassResponses("keyword", 5, 0)).thenReturn(pages);
+    Page<UniversityClassResponse> pages = new PageImpl<>(getUniversityClassResponses());
+    when(service.getUniversityClassResponses("keyword", 5, "0")).thenReturn(pages);
 
-      mockMvc.perform(get("/admin/classes?keyword=keyword&pageNumber=0"))
-          .andExpect(status().isOk())
-          .andExpect(model().attribute("currentPage", 1));
+    mockMvc.perform(get("/admin/classes?keyword=keyword&pageNumber=0"))
+        .andExpect(status().isOk())
+        .andExpect(model().attribute("currentPage", 1));
 
-      verify(service, atLeastOnce()).getUniversityClassResponses("keyword", 5, 0);
+    verify(service, atLeastOnce()).getUniversityClassResponses("keyword", 5, "0");
   }
 
   @Test
   void getUniversityClassesShouldAddExpectedAttributesToModel() throws Exception {
     Page<UniversityClassResponse> pages = new PageImpl<>(getUniversityClassResponses());
-    when(service.getUniversityClassResponses("keyword", 5, 0)).thenReturn(pages);
+    when(service.getUniversityClassResponses("keyword", 5, "1")).thenReturn(pages);
 
     mockMvc.perform(get("/admin/classes?keyword=keyword&pageNumber=1"))
         .andExpect(status().isOk())
@@ -207,6 +207,19 @@ public class ClassManagementControllerTest {
     verify(service, atLeastOnce()).saveFromRequest(getUniversityClassCreateRequest());
   }
 
+  @Test
+  void createUniversityClassesWithRepeatOptionShouldCallService() throws Exception {
+    when(service.saveFromRequest(any(UniversityClassCreateRequest.class), anyString(),
+        anyString())).thenReturn(List.of(UniversityClass.builder().build()));
+
+    mockMvc
+        .perform(post("/admin/classes/create/batch?repeat=daily&repeatUntil=2025-01-05").with(csrf()).flashAttr("class",
+            getUniversityClassCreateRequest()))
+        .andExpect(status().is3xxRedirection());
+
+    verify(service, atLeastOnce()).saveFromRequest(getUniversityClassCreateRequest(), "daily", "2025-01-05");
+  }
+
   private UniversityClassResponse getUniversityClassResponse() {
     return UniversityClassResponse.builder()
         .id("id")
@@ -252,7 +265,7 @@ public class ClassManagementControllerTest {
 
   private List<UniversityClassTypeResponse> getUniversityClassTypeResponses() {
     return List.of(UniversityClassTypeResponse.builder().name("Lecture").build(),
-        UniversityClassTypeResponse.builder().name("Seminr").build(), 
+        UniversityClassTypeResponse.builder().name("Seminr").build(),
         UniversityClassTypeResponse.builder().name("Lab").build());
   }
 }

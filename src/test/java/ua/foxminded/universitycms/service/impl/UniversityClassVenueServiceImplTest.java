@@ -135,7 +135,7 @@ class UniversityClassVenueServiceImplTest {
   void getClassVenueResponsesShouldCallMapperIfKeywordIsNull() {
     when(repo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(getEntities()));
 
-    service.getClassVenueResponses(null, 1, 0);
+    service.getClassVenueResponses(null, 1, "0");
 
     verify(mapper, atLeastOnce()).classVenueToClassVenueResponse(any());
   }
@@ -144,7 +144,7 @@ class UniversityClassVenueServiceImplTest {
   void getClassVenueResponsesShouldCallRepoFindAllIfKeywordIsNull() {
     when(repo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(getEntities()));
 
-    service.getClassVenueResponses(null, 1, 0);
+    service.getClassVenueResponses(null, 1, "0");
 
     verify(repo, atLeastOnce()).findAll(any(PageRequest.class));
   }
@@ -153,7 +153,7 @@ class UniversityClassVenueServiceImplTest {
   void getClassVenueResponsesShouldCallRepoFindAllIfKeywordIsBlank() {
     when(repo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(getEntities()));
 
-    service.getClassVenueResponses("", 1, 0);
+    service.getClassVenueResponses("", 1, "0");
 
     verify(repo, atLeastOnce()).findAll(any(PageRequest.class));
   }
@@ -163,7 +163,7 @@ class UniversityClassVenueServiceImplTest {
     when(repo.findByNameContaining(any(), any(PageRequest.class)))
         .thenReturn(new PageImpl<>(getEntities()));
 
-    service.getClassVenueResponses("keyword", 1, 0);
+    service.getClassVenueResponses("keyword", 1, "1");
 
     verify(mapper, atLeastOnce()).classVenueToClassVenueResponse(any());
   }
@@ -173,7 +173,7 @@ class UniversityClassVenueServiceImplTest {
     when(repo.findByNameContaining(any(), any(PageRequest.class)))
         .thenReturn(new PageImpl<>(getEntities()));
 
-    service.getClassVenueResponses("keyword", 1, 0);
+    service.getClassVenueResponses("keyword", 1, "-1");
 
     verify(repo, atLeastOnce()).findByNameContaining(any(), any(PageRequest.class));
   }

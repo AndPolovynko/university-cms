@@ -16,6 +16,7 @@ import ua.foxminded.universitycms.mapper.CourseMapper;
 import ua.foxminded.universitycms.repository.CourseRepository;
 import ua.foxminded.universitycms.service.CourseService;
 import ua.foxminded.universitycms.service.exception.EntityNotFoundRuntimeException;
+import ua.foxminded.universitycms.service.util.PageNumberParser;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
@@ -52,13 +53,15 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<CourseResponse> getCourseResponses(String keyword, Integer itemsPerPage, Integer pageNumber) {
+  public Page<CourseResponse> getCourseResponses(String keyword, Integer itemsPerPage, String pageNumber) {
     if (keyword == null || keyword.isBlank()) {
-      return repo.findAll(PageRequest.of(pageNumber, itemsPerPage, Sort.by("name")))
+      return repo.findAll(PageRequest.of(PageNumberParser.parse(pageNumber), itemsPerPage, Sort.by("name")))
           .map(mapper::courseToCourseResponse);
     } else {
-      return repo.findByNameContainingOrDescriptionContaining(keyword, keyword,
-          PageRequest.of(pageNumber, itemsPerPage, Sort.by("name"))).map(mapper::courseToCourseResponse);
+      return repo
+          .findByNameContainingOrDescriptionContaining(keyword, keyword,
+              PageRequest.of(PageNumberParser.parse(pageNumber), itemsPerPage, Sort.by("name")))
+          .map(mapper::courseToCourseResponse);
     }
   }
 

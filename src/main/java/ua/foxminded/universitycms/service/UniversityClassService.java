@@ -15,18 +15,21 @@ import ua.foxminded.universitycms.dto.UniversityClassResponse;
 public interface UniversityClassService {
   UniversityClass saveFromRequest(UniversityClassCreateRequest request);
 
+  Iterable<UniversityClass> saveFromRequest(UniversityClassCreateRequest request, String repeat,
+      String repeatUntil);
+
   UniversityClassResponse getUniversityClassResponseById(String id);
 
   UniversityClassEditRequest getUniversityClassEditRequestById(String id);
 
-  Page<UniversityClassResponse> getUniversityClassResponses(String keyword, Integer itemsPerPage, Integer pageNumber);
+  Page<UniversityClassResponse> getUniversityClassResponses(String keyword, Integer itemsPerPage, String pageNumber);
 
   Map<String, Map<String, List<UniversityClassResponse>>> getUniversityClassResponsesByDateRangeAndGroupName(
       OffsetDateTime startDate, OffsetDateTime endDate, String studentLogin);
 
   Map<String, Map<String, List<UniversityClassResponse>>> getUniversityClassResponsesByDateRangeAndGroupName(
       String customRange, TimeZone timeZone, String studentLogin);
-  
+
   Map<String, Map<String, List<UniversityClassResponse>>> getUniversityClassResponsesByDateRangeAndTeacherLogin(
       OffsetDateTime startDate, OffsetDateTime endDate, String teacherLogin);
 

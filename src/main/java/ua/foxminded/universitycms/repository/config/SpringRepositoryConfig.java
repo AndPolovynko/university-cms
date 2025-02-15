@@ -21,13 +21,13 @@ import jakarta.persistence.EntityManagerFactory;
 @EnableJpaRepositories("ua.foxminded.universitycms.repository")
 @EnableTransactionManagement
 public class SpringRepositoryConfig {
-  
+
   @Configuration
   @Profile("local")
   @PropertySource("local.datasource")
   public static class LocaltDataSourceConfig {
   }
-  
+
   @Configuration
   @Profile("docker")
   @PropertySource("docker.datasource")
@@ -36,9 +36,9 @@ public class SpringRepositoryConfig {
 
   @Bean
   public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-      @Value("${datasource.driver}") String driverClassName, 
+      @Value("${datasource.driver}") String driverClassName,
       @Value("${datasource.url}") String url,
-      @Value("${datasource.username}") String username, 
+      @Value("${datasource.username}") String username,
       @Value("${datasource.password}") String password,
       @Value("${datasource.batch-size}") int batchSize) {
     Map<String, String> properties = new HashMap<>();

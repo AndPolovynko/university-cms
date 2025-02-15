@@ -1,7 +1,10 @@
 package ua.foxminded.universitycms.controller.universityclass;
 
 import java.util.List;
+<<<<<<< Updated upstream
 import java.util.Optional;
+=======
+>>>>>>> Stashed changes
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,20 +39,14 @@ public class ClassVenueManagementController {
   @ResponseBody
   public List<UniversityClassVenueResponse> searchVenues(@RequestParam(defaultValue = "") String keyword,
       @Value("${fastSearchLimit}") Integer fastSearchLimit) {
-    return service.getClassVenueResponses(keyword, fastSearchLimit, 0).toList();
+    return service.getClassVenueResponses(keyword, fastSearchLimit, "0").toList();
   }
 
   @GetMapping
   public String getVenues(Model model, @RequestParam(defaultValue = "") String keyword,
       @RequestParam(defaultValue = "1") String pageNumber, @Value("${venuesPerPage}") Integer pageSize) {
     
-    Integer pageNumberInt = Optional.of(pageNumber)
-        .filter(param -> param.matches("\\d+"))
-        .map(Integer::parseInt)
-        .filter(num -> num > 0)
-        .orElse(1);
-    
-    Page<UniversityClassVenueResponse> venues = service.getClassVenueResponses(keyword, pageSize, pageNumberInt - 1);
+    Page<UniversityClassVenueResponse> venues = service.getClassVenueResponses(keyword, pageSize, pageNumber);
     model.addAttribute("venues", venues.getContent());
     model.addAttribute("currentPage", venues.getNumber() + 1);
     model.addAttribute("totalPages", venues.getTotalPages());

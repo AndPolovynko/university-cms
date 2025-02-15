@@ -101,6 +101,34 @@
         <label class="label" for="date" th:text="#{admin.classes.create.datetime}">Date & Time (UTC):</label>
         <div class="control">
           <input class="input" type="datetime-local" th:field="*{dateTime}" autocomplete="off" required>
+<<<<<<< Updated upstream
+=======
+        </div>
+      </div>
+      
+      <div class="control mb-3">
+        <input type="checkbox" id="repeatCheckbox" onchange="toggleRepeatOptions()"/>
+        <span th:text="#{admin.classes.create.repeat}">Repeat</span>
+      </div>
+      
+      <div class="control mb-4" id="repeatOptions" style="display: none">
+        <div class="is-flex is-align-items-center">
+          <span th:text="#{admin.classes.create.repeat}">Repeat</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <div class="select is-multiple">
+            <select id="option" name="option" onchange="changeFormAction()">
+              <option th:text="#{admin.classes.create.daily}">daily</option>
+              <option th:text="#{admin.classes.create.weekly}">weekly</option>
+              <option th:text="#{admin.classes.create.monthly}">monthly</option>
+            </select>
+          </div>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <span th:text="#{admin.classes.create.until}">until</span>
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <div class="control">
+            <input id="untilDate" class="input" type="date" autocomplete="off" onchange="changeFormAction()">
+          </div>
+>>>>>>> Stashed changes
         </div>
       </div>
       
@@ -109,9 +137,20 @@
       </div>
     </form>
   </div>
-
   
   <script>
+    function changeFormAction() {
+      const repeat = document.getElementById("option");
+      const untilDate = document.getElementById("untilDate");
+      
+      document.getElementById("form").action = 'create/batch?repeat=' + repeat.value + '&repeatUntil=' + untilDate.value;
+    }
+  
+    function toggleRepeatOptions() {
+      const repeatCheckbox = document.getElementById("repeatCheckbox");
+      repeatOptions.style.display = repeatCheckbox.checked ? "block" : "none";
+    }
+  
   	async function searchCourses() {
 	  const query = document.getElementById('courseSearchInput').value;
 	  const courseDropdown = document.getElementById('courseDropdown');

@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,8 @@ class UniversityClassServiceImplTest {
 
   @Captor
   ArgumentCaptor<UniversityClass> classCaptor;
+  @Captor
+  ArgumentCaptor<ArrayList<UniversityClass>> classListCaptor;
   @Captor
   ArgumentCaptor<UniversityClassVenue> venueCaptor;
   @Captor
@@ -233,6 +236,139 @@ class UniversityClassServiceImplTest {
   }
 
   @Test
+  void saveFromRequestWithFrequencyShouldCallMapper() {
+    when(mapper.classCreateRequestToClass(any(UniversityClassCreateRequest.class)))
+        .thenReturn(getUniversityClass());
+    when(typeRepo.findByName("type")).thenReturn(Optional.of(UniversityClassType.builder()
+        .name("type").build()));
+    when(venueRepo.findByName("venue")).thenReturn(Optional.of(UniversityClassVenue.builder()
+        .name("venue").build()));
+    when(courseRepo.findByName("course")).thenReturn(Optional.of(Course.builder()
+        .name("course").build()));
+    when(groupRepo.findByName(anyString()))
+        .thenReturn(Optional.of(Group.builder().name("group").build()));
+    when(userRepo.findByLogin(anyString()))
+        .thenReturn(Optional.of(User.builder().build()));
+
+    service.saveFromRequest(getCreateRequestWithUtcTime(), "daily", "2000-04-01");
+
+    verify(mapper, atLeastOnce()).classCreateRequestToClass(getCreateRequestWithUtcTime());
+  }
+
+  @Test
+  void saveFromRequestWithFrequencyShouldSaveCorrectNumberOfClassesWithWeeklyRepeatFrequency() {
+    when(mapper.classCreateRequestToClass(any(UniversityClassCreateRequest.class)))
+        .thenReturn(UniversityClass.builder()
+            .dateTime(OffsetDateTime.of(LocalDate.of(2000, 1, 1), LocalTime.of(12, 00), ZoneOffset.of("+00:00")))
+            .build());
+    when(typeRepo.findByName("type")).thenReturn(Optional.of(UniversityClassType.builder()
+        .id("type-id")
+        .name("type").build()));
+    when(venueRepo.findByName("venue")).thenReturn(Optional.of(UniversityClassVenue.builder()
+        .id("venue-id")
+        .name("venue").build()));
+    when(courseRepo.findByName("course")).thenReturn(Optional.of(Course.builder()
+        .id("course-id")
+        .name("course")
+        .description("description").build()));
+    when(groupRepo.findByName("group-1"))
+        .thenReturn(Optional.of(Group.builder()
+            .id("group-1-id")
+            .name("group-1").build()));
+    when(groupRepo.findByName("group-2"))
+        .thenReturn(Optional.of(Group.builder()
+            .id("group-2-id")
+            .name("group-2").build()));
+    when(userRepo.findByLogin("teacher-1"))
+        .thenReturn(Optional.of(User.builder()
+            .id("teacher-1-id")
+            .login("teacher-1")
+            .userDetailsList(List.of(
+                TeacherDetails.builder()
+                    .id("teacher-details-1-id")
+                    .firstName("Teach")
+                    .lastName("Teachson").build()))
+            .build()));
+    when(userRepo.findByLogin("teacher-2"))
+        .thenReturn(Optional.of(User.builder()
+            .id("teacher-2-id")
+            .login("teacher-2")
+            .userDetailsList(List.of(
+                TeacherDetails.builder()
+                    .id("teacher-details-2-id")
+                    .firstName("Teach")
+                    .lastName("Teachson").build()))
+            .build()));
+
+    service.saveFromRequest(getCreateRequestWithUtcTime(), "weekly", "2000-01-25");
+
+    verify(classRepo).saveAll(classListCaptor.capture());
+    assertThat(classListCaptor.getValue().size()).isEqualTo(4);
+  }
+
+  @Test
+  void saveFromRequestWithFrequencyShouldSaveCorrectNumberOfClassesWithMonthlyRepeatFrequenc() {
+    when(mapper.classCreateRequestToClass(any(UniversityClassCreateRequest.class)))
+        .thenReturn(UniversityClass.builder()
+            .dateTime(OffsetDateTime.of(LocalDate.of(2000, 1, 1), LocalTime.of(12, 00), ZoneOffset.of("+00:00")))
+            .build());
+    when(typeRepo.findByName("type")).thenReturn(Optional.of(UniversityClassType.builder()
+        .id("type-id")
+        .name("type").build()));
+    when(venueRepo.findByName("venue")).thenReturn(Optional.of(UniversityClassVenue.builder()
+        .id("venue-id")
+        .name("venue").build()));
+    when(courseRepo.findByName("course")).thenReturn(Optional.of(Course.builder()
+        .id("course-id")
+        .name("course")
+        .description("description").build()));
+    when(groupRepo.findByName("group-1"))
+        .thenReturn(Optional.of(Group.builder()
+            .id("group-1-id")
+            .name("group-1").build()));
+    when(groupRepo.findByName("group-2"))
+        .thenReturn(Optional.of(Group.builder()
+            .id("group-2-id")
+            .name("group-2").build()));
+    when(userRepo.findByLogin("teacher-1"))
+        .thenReturn(Optional.of(User.builder()
+            .id("teacher-1-id")
+            .login("teacher-1")
+            .userDetailsList(List.of(
+                TeacherDetails.builder()
+                    .id("teacher-details-1-id")
+                    .firstName("Teach")
+                    .lastName("Teachson").build()))
+            .build()));
+    when(userRepo.findByLogin("teacher-2"))
+        .thenReturn(Optional.of(User.builder()
+            .id("teacher-2-id")
+            .login("teacher-2")
+            .userDetailsList(List.of(
+                TeacherDetails.builder()
+                    .id("teacher-details-2-id")
+                    .firstName("Teach")
+                    .lastName("Teachson").build()))
+            .build()));
+
+    service.saveFromRequest(getCreateRequestWithUtcTime(), "monthly", "2000-04-01");
+
+    verify(classRepo).saveAll(classListCaptor.capture());
+    assertThat(classListCaptor.getValue().size()).isEqualTo(4);
+  }
+
+  @Test
+  void saveFromRequestWithFrequencyShouldThrowEntityNotFoundRuntimeExceptionIfTypeNotFound() {
+    when(mapper.classCreateRequestToClass(any(UniversityClassCreateRequest.class)))
+        .thenReturn(getEmptyUniversityClass());
+
+    EntityNotFoundRuntimeException exception = assertThrows(EntityNotFoundRuntimeException.class,
+        () -> service.saveFromRequest(getCreateRequest(), "daily", "2000-04-01"));
+
+    assertThat(exception.getMessage()).contains("type");
+  }
+
+  @Test
   void getUniversityClassResponseByIdShouldReturnExpectedResult() {
     when(classRepo.findById("class-id")).thenReturn(Optional.of(getUniversityClass()));
     when(mapper.classToClassResponse(getUniversityClass())).thenReturn(getResoponse());
@@ -272,7 +408,7 @@ class UniversityClassServiceImplTest {
   void getUniversityClassResponsesShouldCallMapperIfKeywordIsNull() {
     when(classRepo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<UniversityClass>(getUniversityClasses()));
 
-    service.getUniversityClassResponses(null, 1, 0);
+    service.getUniversityClassResponses(null, 1, "0");
 
     verify(mapper, atLeastOnce()).classToClassResponse(any());
   }
@@ -281,7 +417,7 @@ class UniversityClassServiceImplTest {
   void getUniversityClassResponsesShouldCallRepoFindAllIfKeywordIsNull() {
     when(classRepo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<UniversityClass>(getUniversityClasses()));
 
-    service.getUniversityClassResponses(null, 1, 0);
+    service.getUniversityClassResponses(null, 1, "0");
 
     verify(classRepo, atLeastOnce()).findAll(any(PageRequest.class));
   }
@@ -290,7 +426,7 @@ class UniversityClassServiceImplTest {
   void getUniversityClassResponsesShouldCallRepoFindAllIfKeywordIsBlank() {
     when(classRepo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<UniversityClass>(getUniversityClasses()));
 
-    service.getUniversityClassResponses("", 1, 0);
+    service.getUniversityClassResponses("", 1, "0");
 
     verify(classRepo, atLeastOnce()).findAll(any(PageRequest.class));
   }
@@ -301,9 +437,27 @@ class UniversityClassServiceImplTest {
         any(PageRequest.class)))
         .thenReturn(new PageImpl<UniversityClass>(getUniversityClasses()));
 
-    service.getUniversityClassResponses("keyword", 1, 0);
+    service.getUniversityClassResponses("keyword", 1, "0");
 
     verify(mapper, atLeastOnce()).classToClassResponse(any());
+  }
+
+  @Test
+  void getUniversityClassResponsesShouldCallRepoFindAllIfPageNumberIsNegative() {
+    when(classRepo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<UniversityClass>(getUniversityClasses()));
+
+    service.getUniversityClassResponses("", 1, "-1");
+
+    verify(classRepo, atLeastOnce()).findAll(any(PageRequest.class));
+  }
+
+  @Test
+  void getUniversityClassResponsesShouldCallRepoFindAllIfPageNumberIsPositive() {
+    when(classRepo.findAll(any(PageRequest.class))).thenReturn(new PageImpl<UniversityClass>(getUniversityClasses()));
+
+    service.getUniversityClassResponses("", 1, "2");
+
+    verify(classRepo, atLeastOnce()).findAll(any(PageRequest.class));
   }
 
   @Test
@@ -312,7 +466,7 @@ class UniversityClassServiceImplTest {
         any(PageRequest.class)))
         .thenReturn(new PageImpl<UniversityClass>(getUniversityClasses()));
 
-    service.getUniversityClassResponses("keyword", 1, 0);
+    service.getUniversityClassResponses("keyword", 1, "0");
 
     verify(classRepo, atLeastOnce()).findByTypeNameContainingOrVenueNameContainingOrCourseNameContaining(any(), any(),
         any(),
@@ -542,7 +696,7 @@ class UniversityClassServiceImplTest {
         OffsetDateTime.of(LocalDate.of(2024, 12, 31), LocalTime.of(0, 0), ZoneOffset.of("+05:30")),
         "login");
   }
-  
+
   @Test
   void getUniversityClassResponsesByDateRangeAndTeacherLoginShouldReturnExpectedResult() {
     UniversityClass class1 = UniversityClass.builder()
@@ -714,7 +868,7 @@ class UniversityClassServiceImplTest {
     assertThat(service.getUniversityClassResponsesByDateRangeAndTeacherLogin("2024-12-01_2024-12-31",
         TimeZone.getTimeZone("Asia/Kolkata"), "group")).isEqualTo(expectedResult);
   }
-  
+
   @Test
   void editFromRequestShouldCallUniversityClassRepositorySaveMethodWithExpectedUniversityClass() {
     when(classRepo.findById("id")).thenReturn(Optional.of(getUniversityClass()));
@@ -846,6 +1000,17 @@ class UniversityClassServiceImplTest {
         .groupNames(List.of("group-1", "group-2"))
         .teacherLogins(List.of("teacher-1", "teacher-2"))
         .dateTime("2000-01-01T12:00+05:30")
+        .build();
+  }
+
+  private UniversityClassCreateRequest getCreateRequestWithUtcTime() {
+    return UniversityClassCreateRequest.builder()
+        .type("type")
+        .venue("venue")
+        .course("course")
+        .groupNames(List.of("group-1", "group-2"))
+        .teacherLogins(List.of("teacher-1", "teacher-2"))
+        .dateTime("2000-01-01T12:00+00:00")
         .build();
   }
 

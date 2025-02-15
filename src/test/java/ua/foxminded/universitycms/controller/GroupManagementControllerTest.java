@@ -64,16 +64,16 @@ class GroupManagementControllerTest {
 
   @Test
   void getGroupsShouldCallServiceMethodWithExpectedArguments() throws Exception {
-    when(service.getGroupResponses("keyword", 5, 0)).thenReturn(new PageImpl<GroupResponse>(getResponses()));
+    when(service.getGroupResponses("keyword", 5, "1")).thenReturn(new PageImpl<GroupResponse>(getResponses()));
     mockMvc.perform(get("/admin/groups?keyword=keyword&pageNumber=1")).andExpect(status().isOk());
 
-    verify(service, atLeastOnce()).getGroupResponses("keyword", 5, 0);
+    verify(service, atLeastOnce()).getGroupResponses("keyword", 5, "1");
   }
   
   @Test
   void getGroupsShouldAddExpectedAttributesToModel() throws Exception {
     Page<GroupResponse> pages = new PageImpl<>(getResponses());
-    when(service.getGroupResponses("keyword", 5, 0)).thenReturn(pages);
+    when(service.getGroupResponses("keyword", 5, "1")).thenReturn(pages);
     
     mockMvc.perform(get("/admin/groups?keyword=keyword&pageNumber=1"))
       .andExpect(status().isOk())
@@ -85,35 +85,35 @@ class GroupManagementControllerTest {
   
   @Test
   void getGroupsShouldDefaultToPageOneWhenPageNumberIsString() throws Exception {
-      when(service.getGroupResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getGroupResponses("keyword", 5, "invalid")).thenReturn(new PageImpl<>(getResponses()));
 
       mockMvc.perform(get("/admin/groups?keyword=keyword&pageNumber=invalid"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
 
-      verify(service, atLeastOnce()).getGroupResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getGroupResponses("keyword", 5, "invalid");
   }
   
   @Test
   void getGroupsShouldDefaultToPageOneWhenPageNumberIsNegative() throws Exception {
-      when(service.getGroupResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getGroupResponses("keyword", 5, "-1")).thenReturn(new PageImpl<>(getResponses()));
 
       mockMvc.perform(get("/admin/groups?keyword=keyword&pageNumber=-1"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
 
-      verify(service, atLeastOnce()).getGroupResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getGroupResponses("keyword", 5, "-1");
   }
   
   @Test
   void getGroupsShouldDefaultToPageOneWhenPageNumberIsZero() throws Exception {
-      when(service.getGroupResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getGroupResponses("keyword", 5, "0")).thenReturn(new PageImpl<>(getResponses()));
 
       mockMvc.perform(get("/admin/groups?keyword=keyword&pageNumber=0"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
 
-      verify(service, atLeastOnce()).getGroupResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getGroupResponses("keyword", 5, "0");
   }
   
   @Test

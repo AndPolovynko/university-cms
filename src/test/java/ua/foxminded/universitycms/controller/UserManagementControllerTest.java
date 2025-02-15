@@ -2,7 +2,6 @@ package ua.foxminded.universitycms.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
@@ -33,7 +32,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.ModelAndView;
 
-import jakarta.servlet.ServletException;
 import ua.foxminded.universitycms.SpringSecurityConfig;
 import ua.foxminded.universitycms.domain.User;
 import ua.foxminded.universitycms.dto.UserCreateRequest;
@@ -77,49 +75,49 @@ class UserManagementControllerTest {
 
   @Test
   void getUsersShouldCallServiceMethodWithExpectedArguments() throws Exception {
-    when(service.getUserResponses("keyword", 5, 0)).thenReturn(new PageImpl<UserResponse>(getResponses()));
+    when(service.getUserResponses("keyword", 5, "1")).thenReturn(new PageImpl<UserResponse>(getResponses()));
     mockMvc.perform(get("/admin/users?keyword=keyword&pageNumber=1")).andExpect(status().isOk());
 
-    verify(service, atLeastOnce()).getUserResponses("keyword", 5, 0);
+    verify(service, atLeastOnce()).getUserResponses("keyword", 5, "1");
   }
   
   @Test
   void getUsersShouldDefaultToPageOneWhenPageNumberIsString() throws Exception {
-      when(service.getUserResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getUserResponses("keyword", 5, "invalid")).thenReturn(new PageImpl<>(getResponses()));
 
       mockMvc.perform(get("/admin/users?keyword=keyword&pageNumber=invalid"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
 
-      verify(service, atLeastOnce()).getUserResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getUserResponses("keyword", 5, "invalid");
   }
 
   @Test
   void getUsersShouldDefaultToPageOneWhenPageNumberIsNegative() throws Exception {
-      when(service.getUserResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getUserResponses("keyword", 5, "-1")).thenReturn(new PageImpl<>(getResponses()));
 
       mockMvc.perform(get("/admin/users?keyword=keyword&pageNumber=-1"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
 
-      verify(service, atLeastOnce()).getUserResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getUserResponses("keyword", 5, "-1");
   }
 
   @Test
   void getUsersShouldDefaultToPageOneWhenPageNumberIsZero() throws Exception {
-      when(service.getUserResponses("keyword", 5, 0)).thenReturn(new PageImpl<>(getResponses()));
+      when(service.getUserResponses("keyword", 5, "0")).thenReturn(new PageImpl<>(getResponses()));
 
       mockMvc.perform(get("/admin/users?keyword=keyword&pageNumber=0"))
           .andExpect(status().isOk())
           .andExpect(model().attribute("currentPage", 1));
 
-      verify(service, atLeastOnce()).getUserResponses("keyword", 5, 0);
+      verify(service, atLeastOnce()).getUserResponses("keyword", 5, "0");
   }
   
   @Test
   void getUsersShouldAddExpectedAttributesToModel() throws Exception {
     Page<UserResponse> pages = new PageImpl<>(getResponses());
-    when(service.getUserResponses("keyword", 5, 0)).thenReturn(pages);
+    when(service.getUserResponses("keyword", 5, "1")).thenReturn(pages);
 
     mockMvc.perform(get("/admin/users?keyword=keyword&pageNumber=1"))
         .andExpect(status().isOk())
@@ -188,40 +186,32 @@ class UserManagementControllerTest {
 
   @Test
   void updateUserShouldCallServiceMethodWithExpectedArgumentsIfEdditionTypeIsLoginInfo() throws Exception {
-    doNothing().when(service).editLoginInfoFromRequest(getEditRequest());
+    doNothing().when(service).editUserFromRequest("login-info", getEditRequest());
 
     mockMvc.perform(put("/admin/users/edit/login-info/id").with(csrf()).flashAttr("user", getEditRequest()))
         .andExpect(status().is3xxRedirection());
 
-    verify(service, atLeastOnce()).editLoginInfoFromRequest(getEditRequest());
+    verify(service, atLeastOnce()).editUserFromRequest("login-info", getEditRequest());
   }
 
   @Test
   void updateUserShouldCallServiceMethodWithExpectedArgumentsIfEdditionTypeIsRoles() throws Exception {
-    doNothing().when(service).editRolesAndDetailsFromRequest(getEditRequest());
+    doNothing().when(service).editUserFromRequest("roles", getEditRequest());
 
     mockMvc.perform(put("/admin/users/edit/roles/id").with(csrf()).flashAttr("user", getEditRequest()))
         .andExpect(status().is3xxRedirection());
 
-    verify(service, atLeastOnce()).editRolesAndDetailsFromRequest(getEditRequest());
+    verify(service, atLeastOnce()).editUserFromRequest("roles", getEditRequest());
   }
 
   @Test
   void updateUserShouldCallServiceMethodWithExpectedArgumentsIfEdditionTypeIsDetails() throws Exception {
-    doNothing().when(service).editRolesAndDetailsFromRequest(getEditRequest());
+    doNothing().when(service).editUserFromRequest("details", getEditRequest());
 
     mockMvc.perform(put("/admin/users/edit/details/id").with(csrf()).flashAttr("user", getEditRequest()))
         .andExpect(status().is3xxRedirection());
 
-    verify(service, atLeastOnce()).editRolesAndDetailsFromRequest(getEditRequest());
-  }
-
-  @Test
-  void updateUserShouldShouldThrowExceptionIfEdditionTypeIsUndefined() throws Exception {
-    ServletException exception = assertThrows(ServletException.class,
-        () -> mockMvc.perform(put("/admin/users/edit/undefined-type/id").with(csrf()).flashAttr("user", getEditRequest())));
-
-    assertThat(exception.getMessage()).contains("undefined-type");
+    verify(service, atLeastOnce()).editUserFromRequest("details", getEditRequest());
   }
 
   @Test

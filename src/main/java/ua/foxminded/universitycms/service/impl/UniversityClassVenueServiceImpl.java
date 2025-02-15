@@ -16,6 +16,7 @@ import ua.foxminded.universitycms.mapper.UniversityClassVenueMapper;
 import ua.foxminded.universitycms.repository.UniversityClassVenueRepository;
 import ua.foxminded.universitycms.service.UniversityClassVenueService;
 import ua.foxminded.universitycms.service.exception.EntityNotFoundRuntimeException;
+import ua.foxminded.universitycms.service.util.PageNumberParser;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
@@ -53,12 +54,14 @@ public class UniversityClassVenueServiceImpl implements UniversityClassVenueServ
   @Override
   @Transactional(readOnly = true)
   public Page<UniversityClassVenueResponse> getClassVenueResponses(String keyword, Integer itemsPerPage,
-      Integer pageNumber) {
+      String pageNumber) {
     if (keyword == null || keyword.isBlank()) {
-      return repo.findAll(PageRequest.of(pageNumber, itemsPerPage, Sort.by("name")))
+      return repo.findAll(PageRequest.of(PageNumberParser.parse(pageNumber), itemsPerPage, Sort.by("name")))
           .map(mapper::classVenueToClassVenueResponse);
     } else {
-      return repo.findByNameContaining(keyword, PageRequest.of(pageNumber, itemsPerPage, Sort.by("name")))
+      return repo
+          .findByNameContaining(keyword,
+              PageRequest.of(PageNumberParser.parse(pageNumber), itemsPerPage, Sort.by("name")))
           .map(mapper::classVenueToClassVenueResponse);
     }
   }
